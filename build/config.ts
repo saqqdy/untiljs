@@ -16,7 +16,7 @@ export const banner =
 	' * ' +
 	pkg.description +
 	'\n' +
-	' * (c) 2021-' +
+	' * (c) 2022-' +
 	new Date().getFullYear() +
 	' saqqdy \n' +
 	' * Released under the MIT License.\n' +

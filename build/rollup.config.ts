@@ -50,21 +50,6 @@ const configs: Config[] = IS_WATCH
 			}
 		]
 	: [
-			// {
-			// 	input: 'src/index.ts',
-			// 	file: 'dist/index.esm-browser.js',
-			// 	format: 'es',
-			// 	browser: true,
-			// 	env: 'development'
-			// },
-			// {
-			// 	input: 'src/index.ts',
-			// 	file: 'dist/index.esm-browser.prod.js',
-			// 	format: 'es',
-			// 	browser: true,
-			// 	minify: true,
-			// 	env: 'production'
-			// },
 			{
 				input: 'src/index.ts',
 				file: 'dist/index.esm.js',
