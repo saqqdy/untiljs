@@ -20,7 +20,7 @@ const testCustomConditions = async () => {
 		val2.value = 2
 	}, 1000)
 
-  	await until(val2).toMatch(value => value > 1)
+	await until(val2).toMatch(value => value > 1)
 	val2Changed.value = true
 }
 
@@ -31,7 +31,7 @@ const testTimeout = async () => {
 		val3.value = 2
 	}, 1000)
 
-  	await until(val3).toBe(ref(2), { timeout: 500, throwOnTimeout: true })
+	await until(val3).toBe(ref(2), { timeout: 500, throwOnTimeout: true })
 	val3Value.value = val3.value
 }
 
@@ -41,7 +41,7 @@ const val4_toMatch5_10 = ref(false)
 const val4_changed = ref(false)
 const val4_changedTimes2 = ref(false)
 const val4_toBeTruthy = ref(false)
-const val4_toBeNull= ref(false)
+const val4_toBeNull = ref(false)
 const val4_not_toBeNull = ref(false)
 const val4_not_toBeTruthy = ref(false)
 const testOthers = async () => {
@@ -49,31 +49,47 @@ const testOthers = async () => {
 		val4.value = 2
 	}, 1000)
 
-	until(val4).toBe(true, { timeout: 1500 }).then(() => {
-		toBeTrue.value = true
-	})
-	 until(val4).toMatch(v => v > 5 && v < 10, { timeout: 1500 }).then(() => {
-		val4_toMatch5_10.value = true
-	})
-	 until(val4).changed({ timeout: 1500 }).then(() => {
-		val4_changed.value = true
-	})
-	 until(val4).changedTimes(2, { timeout: 1500 }).then(() => {
-		val4_changedTimes2.value = true
-	})
-	 until(val4).toBeTruthy({ timeout: 1500 }).then(() => {
-		val4_toBeTruthy.value = true
-	})
-	 until(val4).toBeNull( { timeout: 1500 }).then(() => {
-		val4_toBeNull.value = true
-	})
+	until(val4)
+		.toBe(true, { timeout: 1500, throwOnTimeout: true })
+		.then(() => {
+			val4_toBeTrue.value = true
+		})
+	until(val4)
+		.toMatch(v => v > 5 && v < 10, { timeout: 1500, throwOnTimeout: true })
+		.then(() => {
+			val4_toMatch5_10.value = true
+		})
+	until(val4)
+		.changed({ timeout: 1500, throwOnTimeout: true })
+		.then(() => {
+			val4_changed.value = true
+		})
+	until(val4)
+		.changedTimes(2, { timeout: 1500, throwOnTimeout: true })
+		.then(() => {
+			val4_changedTimes2.value = true
+		})
+	until(val4)
+		.toBeTruthy({ timeout: 1500, throwOnTimeout: true })
+		.then(() => {
+			val4_toBeTruthy.value = true
+		})
+	until(val4)
+		.toBeNull({ timeout: 1500, throwOnTimeout: true })
+		.then(() => {
+			val4_toBeNull.value = true
+		})
 
-	 until(val4).not.toBeNull({ timeout: 1500 }).then(() => {
-		val4_not_toBeNull.value = true
-	})
-	 until(val4).not.toBeTruthy({ timeout: 1500 }).then(() => {
-		val4_not_toBeTruthy.value = true
-	})
+	until(val4)
+		.not.toBeNull({ timeout: 1500, throwOnTimeout: true })
+		.then(() => {
+			val4_not_toBeNull.value = true
+		})
+	until(val4)
+		.not.toBeTruthy({ timeout: 1500, throwOnTimeout: true })
+		.then(() => {
+			val4_not_toBeTruthy.value = true
+		})
 }
 
 defineExpose({
@@ -84,7 +100,7 @@ defineExpose({
 	val2Changed,
 	testCustomConditions,
 	val3,
-	val3Changed,
+	val3Value,
 	testTimeout,
 	val4,
 	val4_toBeTrue,
@@ -95,7 +111,7 @@ defineExpose({
 	val4_toBeNull,
 	val4_not_toBeNull,
 	val4_not_toBeTruthy,
-	testOthers,
+	testOthers
 })
 </script>
 
