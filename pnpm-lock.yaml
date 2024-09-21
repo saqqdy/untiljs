@@ -16,7 +16,7 @@ dependencies:
     version: 5.21.1
   tslib:
     specifier: ^2.6.3
-    version: 2.6.3
+    version: 2.7.0
   vue-demi:
     specifier: ^0.14.10
     version: 0.14.10(@vue/composition-api@1.7.2)(vue@3.4.37)
@@ -54,7 +54,7 @@ devDependencies:
     version: 0.4.4(rollup@4.21.3)
   '@rollup/plugin-typescript':
     specifier: ^11.1.6
-    version: 11.1.6(rollup@4.21.3)(tslib@2.6.3)(typescript@5.5.4)
+    version: 11.1.6(rollup@4.21.3)(tslib@2.7.0)(typescript@5.5.4)
   '@types/jest':
     specifier: ^29.5.12
     version: 29.5.12
@@ -2528,7 +2528,7 @@ packages:
       terser: 5.17.4
     dev: true
 
-  /@rollup/plugin-typescript@11.1.6(rollup@4.21.3)(tslib@2.6.3)(typescript@5.5.4):
+  /@rollup/plugin-typescript@11.1.6(rollup@4.21.3)(tslib@2.7.0)(typescript@5.5.4):
     resolution: {integrity: sha512-R92yOmIACgYdJ7dJ97p4K69I8gg6IEHt8M7dUBxN3W6nrO8uUxX5ixl0yU/N3aZTi8WhPuICvOHXQvF6FaykAA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -2544,7 +2544,7 @@ packages:
       '@rollup/pluginutils': 5.1.0(rollup@4.21.3)
       resolve: 1.22.2
       rollup: 4.21.3
-      tslib: 2.6.3
+      tslib: 2.7.0
       typescript: 5.5.4
     dev: true
 
@@ -3100,7 +3100,7 @@ packages:
     dependencies:
       '@vue/composition-api': 1.7.2(vue@3.4.37)
       js-cool: 5.21.1
-      tslib: 2.6.3
+      tslib: 2.7.0
       vue: 3.4.37(typescript@5.5.4)
       vue-demi: 0.14.10(@vue/composition-api@1.7.2)(vue@3.4.37)
     dev: false
@@ -3117,7 +3117,7 @@ packages:
       '@uni-use/mounted': 1.5.1(@vue/composition-api@1.7.2)(vue@3.4.37)
       '@vue/composition-api': 1.7.2(vue@3.4.37)
       js-cool: 5.21.1
-      tslib: 2.6.3
+      tslib: 2.7.0
       vue: 3.4.37(typescript@5.5.4)
       vue-demi: 0.14.10(@vue/composition-api@1.7.2)(vue@3.4.37)
     dev: false
@@ -3508,7 +3508,7 @@ packages:
   /await-to-done@1.1.1:
     resolution: {integrity: sha512-55RMMm59luT0pyhToSn0QTioZNkljs7EkxdtlaPU+cgUzz+Jh4P0+h8iXYCunBBWchtqIVutJXxuF8IYctTfhA==}
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.7.0
 
   /aws-sign2@0.7.0:
     resolution: {integrity: sha512-08kcGqnYf/YmjoRhfxyu+CLxBjUtHLXLXX/vUfx9l2LYzG3c1m61nrpyFUZI6zeS+Li/wWMMidD9KgrqtGq3mA==}
@@ -6682,7 +6682,7 @@ packages:
       mount-script: 1.2.0
       mount-style: 1.2.0
       os-lang: 3.2.0
-      tslib: 2.6.3
+      tslib: 2.7.0
       use-downloads: 1.5.1
 
   /js-tokens@4.0.0:
@@ -6874,7 +6874,7 @@ packages:
     dependencies:
       '@types/js-yaml': 4.0.5
       js-yaml: 4.1.0
-      tslib: 2.6.3
+      tslib: 2.7.0
     dev: true
 
   /locate-path@5.0.0:
@@ -8721,7 +8721,7 @@ packages:
     resolution: {integrity: sha512-Vhf+bUa//YSTYKseDiiEuQmhGCoIF3CVBhunm3r/DQnYiGT4JssmnKQc44BIyOZRK2pKjXXAgbhfmbeoC9CJpA==}
     engines: {node: '>=12.20'}
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.7.0
     dev: true
 
   /synckit@0.9.1:
@@ -8729,7 +8729,7 @@ packages:
     engines: {node: ^14.18.0 || >=16.0.0}
     dependencies:
       '@pkgr/core': 0.1.1
-      tslib: 2.6.3
+      tslib: 2.7.0
     dev: true
 
   /tar@6.1.13:
@@ -8855,8 +8855,8 @@ packages:
       strip-bom: 3.0.0
     dev: true
 
-  /tslib@2.6.3:
-    resolution: {integrity: sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==}
+  /tslib@2.7.0:
+    resolution: {integrity: sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==}
 
   /tsnd@1.1.0:
     resolution: {integrity: sha512-sc+Xm5uxwfMlYCjLkwP9i7+9uC4izAo8N/opmdzR+RHtE/XTEfUV8r5FI3oh6RdcMybNHD0DTGultnzrJfcirQ==}
