@@ -1,4 +1,4 @@
-import { watch } from 'vue-demi'
+import { nextTick, watch } from 'vue-demi'
 import { waiting } from 'js-cool'
 import type { WatchSource } from 'vue-demi'
 import { toValue } from '@uni-use/shared'
@@ -33,7 +33,8 @@ export class UntilBase<T, Not extends boolean = false> {
 				this.r,
 				v => {
 					if (condition(v) !== this.isNot) {
-						stop?.()
+						if (stop) stop()
+						else nextTick(() => stop?.())
 						resolve(v)
 					}
 				},

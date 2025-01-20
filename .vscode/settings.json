@@ -25,6 +25,7 @@
 		"Uninteractive",
 		"unpub",
 		"unpublish",
+		"untiljs",
 		"weixin"
 	],
 	"typescript.tsdk": "node_modules/typescript/lib"

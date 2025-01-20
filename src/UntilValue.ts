@@ -1,4 +1,4 @@
-import { isRef, watch } from 'vue-demi'
+import { isRef, nextTick, watch } from 'vue-demi'
 import { waiting } from 'js-cool'
 import type { WatchSource } from 'vue-demi'
 import { type MaybeRefOrGetter, toValue } from '@uni-use/shared'
@@ -26,7 +26,8 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 				[this.r, value],
 				([v1, v2]) => {
 					if (this.isNot !== (v1 === v2)) {
-						stop?.()
+						if (stop) stop()
+						else nextTick(() => stop?.())
 						resolve(v1)
 					}
 				},
