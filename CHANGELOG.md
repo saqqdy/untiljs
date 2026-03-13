@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2025-03-14
+
+### Added
+
+- **`createStore` utility**: New factory function to create Subscribable stores for better React integration and cross-component state sharing.
+
+  ```typescript
+  import { createStore } from 'untiljs'
+
+  const store = createStore(0)
+  store.value = 5
+  await until(store).toBe(5) // ✅ Works perfectly in React!
+  ```
+
+- **React Integration Guide**: Comprehensive documentation for using untiljs in React applications, including the closure issue explanation and solutions.
+
+### Changed
+
+- **Improved React documentation**: Both README.md and README-zh_CN.md now include detailed React integration examples with `useUntil` hook pattern and `createStore` approach.
+
+---
+
 ## [2.0.0] - 2025-03-13
 
 ### Breaking Changes

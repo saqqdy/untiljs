@@ -280,6 +280,31 @@ const store = createSubscribable(0)
 await until(store).toBe(5) // ✅ 最高效！
 ```
 
+#### ✅ 内置方案：`createStore`
+
+untiljs v2.1+ 提供了内置的 `createStore` 函数，专为 React 设计：
+
+```tsx
+import { createStore } from 'untiljs'
+import until from 'untiljs'
+
+// 在组件外部创建 store，或使用 useRef
+const store = createStore(0)
+
+function MyComponent() {
+  const [value, setValue] = useState(store.value)
+
+  useEffect(() => store.subscribe(setValue), [])
+
+  const handleClick = async () => {
+    store.value = 5
+    await until(store).toBe(5) // ✅ 简洁高效！
+  }
+
+  return <button onClick={handleClick}>测试</button>
+}
+```
+
 ### RxJS 集成
 
 ```typescript

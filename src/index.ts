@@ -17,7 +17,8 @@ export default util
 export type * from './types'
 
 // Export utility functions
-export { toValue, isSubscribable, isRefLike, deepEqual, watchSource } from './utils'
+export { toValue, isSubscribable, isRefLike, deepEqual, watchSource, createStore } from './utils'
+export type { Store } from './utils'
 
 // Export classes for advanced usage
 export { UntilBase } from './UntilBase'

@@ -33,7 +33,32 @@ function MyComponent() {
 }
 ```
 
-### ✅ Correct Way 1: useUntil Hook
+### ✅ Recommended: Built-in `createStore`
+
+untiljs v2.1+ provides a built-in `createStore` function for React:
+
+```jsx
+import { createStore } from 'untiljs'
+import until from 'untiljs'
+
+// Create store outside component or in useRef
+const store = createStore(0)
+
+function MyComponent() {
+  const [value, setValue] = useState(store.value)
+
+  useEffect(() => store.subscribe(setValue), [])
+
+  const handleClick = async () => {
+    store.value = 5
+    await until(store).toBe(5) // ✅ Clean and efficient!
+  }
+
+  return <button onClick={handleClick}>Test</button>
+}
+```
+
+### ✅ Alternative: useUntil Hook
 
 Use the custom `useUntil` hook that creates a RefLike object:
 
@@ -79,102 +104,22 @@ function MyComponent() {
 }
 ```
 
-### ✅ Correct Way 2: useRef with RefLike
-
-Use `useRef` to create a RefLike object:
-
-```jsx
-function MyComponent() {
-  const dataRef = useRef({ value: null })
-  const [data, setData] = useState(null)
-
-  const refLike = {
-    get value() {
-      return dataRef.current.value
-    }
-  }
-
-  const loadData = async () => {
-    // Simulate async operation
-    setTimeout(() => {
-      dataRef.current.value = { name: 'John' }
-      setData(dataRef.current.value)
-    }, 1000)
-
-    await until(refLike).toBeTruthy() // ✅ Works correctly!
-  }
-
-  return <button onClick={loadData}>Load Data</button>
-}
-```
-
-### ✅ Correct Way 3: Subscribable Store
-
-For more efficient watching, create a custom Subscribable store:
-
-```jsx
-function createSubscribableStore(initialValue) {
-  let value = initialValue
-  const listeners = new Set()
-
-  return {
-    get value() {
-      return value
-    },
-    set value(newValue) {
-      value = newValue
-      listeners.forEach(cb => cb(value))
-    },
-    subscribe(callback) {
-      listeners.add(callback)
-      callback(value)
-      return () => listeners.delete(callback)
-    }
-  }
-}
-
-// Usage with useEffect
-function MyComponent() {
-  const storeRef = useRef(null)
-  if (!storeRef.current) {
-    storeRef.current = createSubscribableStore(0)
-  }
-  const store = storeRef.current
-
-  const [storeValue, setStoreValue] = useState(store.value)
-
-  useEffect(() => {
-    return store.subscribe(value => setStoreValue(value))
-  }, [store])
-
-  const testToBe = async () => {
-    store.value = 0
-    setTimeout(() => {
-      store.value = 5
-    }, 1000)
-    await until(store).toBe(5) // ✅ Most efficient!
-  }
-
-  return <button onClick={testToBe}>Test</button>
-}
-```
-
 ## Examples Included
 
+- **createStore (Built-in)**: Recommended approach for React
 - **Basic Usage**: `toBe`, `toMatch`, `toBeTruthy`, `toBeNull`, `toBeUndefined`, `toBeNaN`
 - **Change Detection**: `changed`, `changedTimes`
 - **Not Modifier**: `not.toBe`, `not.toBeNull`
 - **Timeout Options**: with and without `throwOnTimeout`
 - **Deep Comparison**: object and array deep comparison
 - **Array Methods**: `toContains`
-- **Custom Subscribable Store**: efficient watching pattern
 - **Async Data Loading**: waiting for async operations
 - **Race Conditions**: using `Promise.race`
 
 ## Why This Matters
 
-React's `useState` returns a value that's captured in closures. When `until` polls the getter function, it always sees the old captured value, not the current state. Using `useRef` or a Subscribable store bypasses this issue because:
+React's `useState` returns a value that's captured in closures. When `until` polls the getter function, it always sees the old captured value, not the current state. Using `createStore` or `useUntil` bypasses this issue because:
 
-1. `useRef` returns a mutable object that persists across renders
-2. The getter function reads from the ref's current property, which always has the latest value
-3. Subscribable stores notify listeners when values change, making watching more efficient
+1. `createStore` provides a Subscribable object that notifies listeners when values change
+2. `useRef` returns a mutable object that persists across renders
+3. The getter function reads from the ref's current property, which always has the latest value

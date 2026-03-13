@@ -1,5 +1,13 @@
 import { describe, expect, it, vi } from 'vitest'
-import { deepEqual, isGetter, isRefLike, isSubscribable, toValue, watchSource } from '../src/utils'
+import {
+	createStore,
+	deepEqual,
+	isGetter,
+	isRefLike,
+	isSubscribable,
+	toValue,
+	watchSource
+} from '../src/utils'
 import type { RefLike, Subscribable } from '../src/types'
 
 // ============================================
@@ -1062,6 +1070,280 @@ describe('watchSource', () => {
 			// This should not cause infinite loop
 			const result = deepEqual(obj, obj)
 			expect(result).toBe(true)
+		})
+	})
+})
+
+// ============================================
+// createStore Tests
+// ============================================
+describe('createStore', () => {
+	describe('basic functionality', () => {
+		it('should create a store with initial value', () => {
+			const store = createStore(42)
+			expect(store.value).toBe(42)
+		})
+
+		it('should allow setting value', () => {
+			const store = createStore(0)
+			store.value = 5
+			expect(store.value).toBe(5)
+		})
+
+		it('should work with different value types', () => {
+			const stringStore = createStore('hello')
+			expect(stringStore.value).toBe('hello')
+			stringStore.value = 'world'
+			expect(stringStore.value).toBe('world')
+
+			const objectStore = createStore({ a: 1 })
+			expect(objectStore.value).toEqual({ a: 1 })
+			objectStore.value = { b: 2 }
+			expect(objectStore.value).toEqual({ b: 2 })
+
+			const arrayStore = createStore([1, 2, 3])
+			expect(arrayStore.value).toEqual([1, 2, 3])
+			arrayStore.value = [4, 5, 6]
+			expect(arrayStore.value).toEqual([4, 5, 6])
+
+			const nullStore = createStore(null)
+			expect(nullStore.value).toBeNull()
+
+			const undefinedStore = createStore(undefined)
+			expect(undefinedStore.value).toBeUndefined()
+		})
+	})
+
+	describe('subscribe', () => {
+		it('should call callback immediately with current value', () => {
+			const store = createStore(10)
+			let receivedValue: number | undefined
+
+			const unsubscribe = store.subscribe(value => {
+				receivedValue = value
+			})
+
+			expect(receivedValue).toBe(10)
+			unsubscribe()
+		})
+
+		it('should notify subscribers when value changes', () => {
+			const store = createStore(0)
+			const receivedValues: number[] = []
+
+			const unsubscribe = store.subscribe(value => {
+				receivedValues.push(value)
+			})
+
+			expect(receivedValues).toEqual([0])
+
+			store.value = 1
+			expect(receivedValues).toEqual([0, 1])
+
+			store.value = 2
+			expect(receivedValues).toEqual([0, 1, 2])
+
+			unsubscribe()
+		})
+
+		it('should not notify when same value is set', () => {
+			const store = createStore(5)
+			const receivedValues: number[] = []
+
+			const unsubscribe = store.subscribe(value => {
+				receivedValues.push(value)
+			})
+
+			expect(receivedValues).toEqual([5])
+
+			store.value = 5 // Same value
+			expect(receivedValues).toEqual([5])
+
+			store.value = 10 // Different value
+			expect(receivedValues).toEqual([5, 10])
+
+			unsubscribe()
+		})
+
+		it('should support multiple subscribers', () => {
+			const store = createStore(0)
+			const values1: number[] = []
+			const values2: number[] = []
+
+			const unsub1 = store.subscribe(v => values1.push(v))
+			const unsub2 = store.subscribe(v => values2.push(v))
+
+			expect(values1).toEqual([0])
+			expect(values2).toEqual([0])
+
+			store.value = 1
+			expect(values1).toEqual([0, 1])
+			expect(values2).toEqual([0, 1])
+
+			store.value = 2
+			expect(values1).toEqual([0, 1, 2])
+			expect(values2).toEqual([0, 1, 2])
+
+			unsub1()
+			unsub2()
+		})
+
+		it('should stop notifying after unsubscribe', () => {
+			const store = createStore(0)
+			const receivedValues: number[] = []
+
+			const unsubscribe = store.subscribe(value => {
+				receivedValues.push(value)
+			})
+
+			expect(receivedValues).toEqual([0])
+
+			unsubscribe()
+
+			store.value = 1
+			store.value = 2
+
+			expect(receivedValues).toEqual([0]) // No new values after unsubscribe
+		})
+
+		it('should handle unsubscribe during notification', () => {
+			const store = createStore(0)
+			const receivedValues: number[] = []
+
+			let unsubscribe: () => void
+			unsubscribe = store.subscribe(value => {
+				receivedValues.push(value)
+				if (value === 1) {
+					unsubscribe()
+				}
+			})
+
+			expect(receivedValues).toEqual([0])
+
+			store.value = 1
+			expect(receivedValues).toEqual([0, 1])
+
+			store.value = 2
+			expect(receivedValues).toEqual([0, 1]) // Already unsubscribed
+		})
+	})
+
+	describe('isSubscribable compatibility', () => {
+		it('should be recognized as Subscribable', () => {
+			const store = createStore(42)
+			expect(isSubscribable(store)).toBe(true)
+		})
+
+		it('should work with toValue', () => {
+			const store = createStore(42)
+			expect(toValue(store)).toBe(42)
+		})
+
+		it('should work with watchSource', async () => {
+			const store = createStore(0)
+			const receivedValues: number[] = []
+
+			const stop = watchSource(store, value => {
+				receivedValues.push(value)
+			})
+
+			await new Promise(resolve => setTimeout(resolve, 50))
+			expect(receivedValues).toEqual([0])
+
+			store.value = 5
+			await new Promise(resolve => setTimeout(resolve, 50))
+			expect(receivedValues).toContain(5)
+
+			stop()
+		})
+	})
+
+	describe('edge cases', () => {
+		it('should handle NaN values correctly', () => {
+			const store = createStore(NaN)
+			expect(Number.isNaN(store.value)).toBe(true)
+
+			const receivedValues: number[] = []
+			const unsubscribe = store.subscribe(v => {
+				receivedValues.push(v)
+			})
+
+			// Initial call
+			expect(receivedValues.length).toBe(1)
+			expect(Number.isNaN(receivedValues[0])).toBe(true)
+
+			store.value = NaN // NaN === NaN is false, but Object.is(NaN, NaN) is true
+			expect(receivedValues.length).toBe(1) // Should not notify because Object.is treats NaN as same
+
+			store.value = 5 // Different value
+			expect(receivedValues.length).toBe(2)
+			expect(receivedValues[1]).toBe(5)
+
+			unsubscribe()
+		})
+
+		it('should handle 0 and -0 correctly', () => {
+			const store = createStore(0)
+			const receivedValues: number[] = []
+
+			const unsubscribe = store.subscribe(v => receivedValues.push(v))
+
+			store.value = -0 // Object.is(0, -0) is false
+			expect(receivedValues.length).toBe(2) // Should notify
+
+			unsubscribe()
+		})
+
+		it('should handle object references', () => {
+			const obj1 = { a: 1 }
+			const obj2 = { a: 1 }
+			const store = createStore(obj1)
+			const receivedValues: object[] = []
+
+			const unsubscribe = store.subscribe(v => receivedValues.push(v))
+
+			store.value = obj2 // Different reference, same content
+			expect(receivedValues.length).toBe(2) // Should notify (reference changed)
+
+			unsubscribe()
+		})
+
+		it('should handle arrays', () => {
+			const store = createStore([1, 2, 3])
+			const receivedValues: number[][] = []
+
+			const unsubscribe = store.subscribe(v => receivedValues.push(v))
+
+			store.value = [1, 2, 3, 4]
+			expect(receivedValues.length).toBe(2)
+
+			unsubscribe()
+		})
+	})
+
+	describe('react integration pattern', () => {
+		it('should work as external store for React', () => {
+			const store = createStore(0)
+			const stateUpdates: number[] = []
+
+			// Simulate React's useEffect + useState pattern
+			const unsubscribe = store.subscribe(value => {
+				stateUpdates.push(value)
+			})
+
+			expect(stateUpdates).toEqual([0])
+
+			store.value = 1
+			expect(stateUpdates).toEqual([0, 1])
+
+			store.value = 2
+			expect(stateUpdates).toEqual([0, 1, 2])
+
+			// Cleanup on unmount
+			unsubscribe()
+
+			store.value = 3
+			expect(stateUpdates).toEqual([0, 1, 2]) // No more updates after unsubscribe
 		})
 	})
 })

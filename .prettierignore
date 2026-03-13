@@ -7,5 +7,5 @@ coverage
 *.bak
 *.bak.js
 *_bak
-pnpm-lock.yaml
+**/pnpm-lock.yaml
 stats.html

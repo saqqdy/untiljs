@@ -282,6 +282,31 @@ const store = createSubscribable(0)
 await until(store).toBe(5) // ✅ Most efficient!
 ```
 
+#### ✅ Built-in Solution: `createStore`
+
+untiljs v2.1+ provides a built-in `createStore` function for React:
+
+```tsx
+import { createStore } from 'untiljs'
+import until from 'untiljs'
+
+// Create store outside component or in useRef
+const store = createStore(0)
+
+function MyComponent() {
+  const [value, setValue] = useState(store.value)
+
+  useEffect(() => store.subscribe(setValue), [])
+
+  const handleClick = async () => {
+    store.value = 5
+    await until(store).toBe(5) // ✅ Clean and efficient!
+  }
+
+  return <button onClick={handleClick}>Test</button>
+}
+```
+
 ### RxJS Integration
 
 ```typescript

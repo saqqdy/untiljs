@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import until from 'untiljs'
+import until, { createStore } from 'untiljs'
 import './App.css'
 
 // ============================================
@@ -415,33 +415,13 @@ function ArrayMethodsExamples() {
 }
 
 // ============================================
-// Custom Store Examples
+// createStore Examples (Built-in Solution)
 // ============================================
-function createSubscribableStore(initialValue) {
-	let value = initialValue
-	const listeners = new Set()
-
-	return {
-		get value() {
-			return value
-		},
-		set value(newValue) {
-			value = newValue
-			listeners.forEach(cb => cb(value))
-		},
-		subscribe(callback) {
-			listeners.add(callback)
-			callback(value)
-			return () => listeners.delete(callback)
-		}
-	}
-}
-
-function CustomStoreExamples() {
-	// Create a store that persists across renders
+function CreateStoreExamples() {
+	// Create a store that persists across renders using built-in createStore
 	const storeRef = useRef(null)
 	if (!storeRef.current) {
-		storeRef.current = createSubscribableStore(0)
+		storeRef.current = createStore(0)
 	}
 	const store = storeRef.current
 
@@ -452,7 +432,7 @@ function CustomStoreExamples() {
 		return store.subscribe(value => setStoreValue(value))
 	}, [store])
 
-	const testSubscribable = async () => {
+	const testCreateStore = async () => {
 		setStoreResult('waiting...')
 		store.value = 0
 
@@ -461,14 +441,18 @@ function CustomStoreExamples() {
 		}, 1000)
 
 		await until(store).toBe(42)
-		setStoreResult(`Success! Subscribable value is ${store.value}`)
+		setStoreResult(`Success! createStore value is ${store.value}`)
 	}
 
 	return (
 		<section className="examples-section">
-			<h2>Custom Subscribable Store</h2>
+			<h2>createStore (Built-in)</h2>
+			<p className="description">
+				<strong>Recommended for React!</strong> Use the built-in <code>createStore</code>{' '}
+				function for clean React integration.
+			</p>
 			<div className="examples-grid">
-				<ExampleCard title="Subscribable" onClick={testSubscribable}>
+				<ExampleCard title="createStore" onClick={testCreateStore}>
 					<p>Value: {storeValue}</p>
 					<p>Result: {storeResult}</p>
 				</ExampleCard>
@@ -588,17 +572,17 @@ function App() {
 		<div className="container">
 			<h1>untiljs React Examples</h1>
 			<p className="description">
-				<strong>Framework Agnostic!</strong> In React, use <code>useUntil</code> hook or
-				custom RefLike objects for proper reactivity.
+				<strong>Framework Agnostic!</strong> In React, use <code>createStore</code>{' '}
+				(recommended) or <code>useUntil</code> hook for proper reactivity.
 			</p>
 
+			<CreateStoreExamples />
 			<BasicExamples />
 			<ChangeDetectionExamples />
 			<NotModifierExamples />
 			<TimeoutExamples />
 			<DeepComparisonExamples />
 			<ArrayMethodsExamples />
-			<CustomStoreExamples />
 			<AsyncDataExample />
 			<RaceConditionExample />
 		</div>

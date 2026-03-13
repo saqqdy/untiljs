@@ -1,6 +1,83 @@
 import type { RefLike, Subscribable, WatchSource } from './types'
 
 /**
+ * A Subscribable store with a settable value
+ */
+export interface Store<T> extends Subscribable<T> {
+	/**
+	 * The current value (gettable and settable)
+	 */
+	value: T
+}
+
+/**
+ * Create a Subscribable store for reactive state management.
+ *
+ * This is particularly useful for React applications where useState's closure
+ * behavior makes it difficult to use getter functions with untiljs.
+ *
+ * @example
+ * ```typescript
+ * import { createStore } from 'untiljs'
+ *
+ * const store = createStore(0)
+ *
+ * // Set value
+ * store.value = 5
+ *
+ * // Use with until
+ * await until(store).toBe(5)
+ *
+ * // Subscribe to changes
+ * const unsubscribe = store.subscribe(value => console.log(value))
+ * unsubscribe() // Clean up
+ * ```
+ *
+ * @example React usage
+ * ```tsx
+ * import { createStore } from 'untiljs'
+ * import until from 'untiljs'
+ *
+ * // Create store outside component or in useRef
+ * const store = createStore(0)
+ *
+ * function MyComponent() {
+ *   const [value, setValue] = useState(store.value)
+ *
+ *   useEffect(() => store.subscribe(setValue), [])
+ *
+ *   const handleClick = async () => {
+ *     store.value = 5
+ *     await until(store).toBe(5) // ✅ Works perfectly!
+ *   }
+ *
+ *   return <button onClick={handleClick}>Test</button>
+ * }
+ * ```
+ */
+export function createStore<T>(initialValue: T): Store<T> {
+	let value = initialValue
+	const listeners = new Set<(value: T) => void>()
+
+	return {
+		get value() {
+			return value
+		},
+		set value(newValue: T) {
+			if (Object.is(value, newValue)) return
+			value = newValue
+			listeners.forEach(listener => listener(value))
+		},
+		subscribe(callback: (value: T) => void): () => void {
+			listeners.add(callback)
+			// Call immediately with current value
+			callback(value)
+			return () => listeners.delete(callback)
+		}
+	}
+}
+
+/**
  * Check if a value is a Subscribable
  */
 export function isSubscribable<T>(value: unknown): value is Subscribable<T> {
