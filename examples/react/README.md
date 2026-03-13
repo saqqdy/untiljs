@@ -26,7 +26,7 @@ function MyComponent() {
     setValue(0)
     setTimeout(() => setValue(5), 1000)
     // ❌ This captures the OLD value due to closure!
-    await until(() => value).toBe(5)  // Won't detect the change
+    await until(() => value).toBe(5) // Won't detect the change
   }
 
   return <button onClick={testToBe}>Test</button>
@@ -52,7 +52,7 @@ function useUntil(initialValue) {
     }
   })
 
-  const setValueAndRef = useCallback((newValue) => {
+  const setValueAndRef = useCallback(newValue => {
     ref.current = newValue
     setValue(newValue)
   }, [])
@@ -72,7 +72,7 @@ function MyComponent() {
   const testToBe = async () => {
     data.setValue(0)
     setTimeout(() => data.setValue(5), 1000)
-    await data.until().toBe(5)  // ✅ Works correctly!
+    await data.until().toBe(5) // ✅ Works correctly!
   }
 
   return <button onClick={testToBe}>Test</button>
@@ -101,7 +101,7 @@ function MyComponent() {
       setData(dataRef.current.value)
     }, 1000)
 
-    await until(refLike).toBeTruthy()  // ✅ Works correctly!
+    await until(refLike).toBeTruthy() // ✅ Works correctly!
   }
 
   return <button onClick={loadData}>Load Data</button>
@@ -149,8 +149,10 @@ function MyComponent() {
 
   const testToBe = async () => {
     store.value = 0
-    setTimeout(() => { store.value = 5 }, 1000)
-    await until(store).toBe(5)  // ✅ Most efficient!
+    setTimeout(() => {
+      store.value = 5
+    }, 1000)
+    await until(store).toBe(5) // ✅ Most efficient!
   }
 
   return <button onClick={testToBe}>Test</button>

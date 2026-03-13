@@ -2,6 +2,8 @@
 /lib
 /es
 /docs
+/test
+/examples/nodejs/node-example.js
 coverage
 /typings
 *.bak

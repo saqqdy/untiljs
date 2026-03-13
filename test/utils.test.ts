@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { deepEqual, isGetter, isRefLike, isSubscribable, toValue, watchSource } from '../src/utils'
-import type { Subscribable, RefLike } from '../src/types'
+import type { RefLike, Subscribable } from '../src/types'
 
 // ============================================
 // isSubscribable Tests
@@ -15,7 +15,7 @@ describe('isSubscribable', () => {
 	})
 
 	it('should return true for Subscribable with getter value', () => {
-		let internalValue = 1
+		const internalValue = 1
 		const subscribable: Subscribable<number> = {
 			get value() {
 				return internalValue
@@ -122,7 +122,7 @@ describe('isRefLike', () => {
 	})
 
 	it('should return true for getter-based value', () => {
-		let internalValue = 1
+		const internalValue = 1
 		const refLike = {
 			get value() {
 				return internalValue
@@ -177,7 +177,7 @@ describe('toValue', () => {
 		})
 
 		it('should extract value from Subscribable with getter', () => {
-			let internalValue = 'test'
+			const internalValue = 'test'
 			const subscribable: Subscribable<string> = {
 				get value() {
 					return internalValue
@@ -208,7 +208,7 @@ describe('toValue', () => {
 		})
 
 		it('should extract value from RefLike with getter', () => {
-			let internalValue = 'dynamic'
+			const internalValue = 'dynamic'
 			const refLike = {
 				get value() {
 					return internalValue

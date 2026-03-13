@@ -21,7 +21,7 @@ function useUntil(initialValue) {
 	})
 
 	// Sync ref with state changes
-	const setValueAndRef = useCallback((newValue) => {
+	const setValueAndRef = useCallback(newValue => {
 		ref.current = newValue
 		setValue(newValue)
 	}, [])
@@ -304,12 +304,20 @@ function TimeoutExamples() {
 		<section className="examples-section">
 			<h2>Timeout Options</h2>
 			<div className="examples-grid">
-				<ExampleCard title="Timeout with throwOnTimeout" onClick={testTimeout} buttonText="Test Timeout (throws)">
+				<ExampleCard
+					title="Timeout with throwOnTimeout"
+					onClick={testTimeout}
+					buttonText="Test Timeout (throws)"
+				>
 					<p>Value: {timeout.value}</p>
 					<p>Result: {timeoutResult}</p>
 				</ExampleCard>
 
-				<ExampleCard title="Timeout without throwOnTimeout" onClick={testTimeoutNoThrow} buttonText="Test Timeout (no throw)">
+				<ExampleCard
+					title="Timeout without throwOnTimeout"
+					onClick={testTimeoutNoThrow}
+					buttonText="Test Timeout (no throw)"
+				>
 					<p>Value: {timeoutNoThrow.value}</p>
 					<p>Result: {timeoutNoThrowResult}</p>
 				</ExampleCard>
@@ -349,7 +357,9 @@ function DeepComparisonExamples() {
 		}, 1000)
 
 		await deepArray.until().toBe([1, 2, 3, 4, 5], { deep: true })
-		setDeepArrayResult(`Success! Array now has ${deepArray.value.length} items: ${deepArray.value.join(', ')}`)
+		setDeepArrayResult(
+			`Success! Array now has ${deepArray.value.length} items: ${deepArray.value.join(', ')}`
+		)
 	}
 
 	return (
@@ -362,7 +372,9 @@ function DeepComparisonExamples() {
 				</ExampleCard>
 
 				<ExampleCard title="Deep Array Comparison" onClick={testDeepArray}>
-					<p>Array: [{Array.isArray(deepArray.value) ? deepArray.value.join(', ') : ''}]</p>
+					<p>
+						Array: [{Array.isArray(deepArray.value) ? deepArray.value.join(', ') : ''}]
+					</p>
 					<p>Result: {deepArrayResult}</p>
 				</ExampleCard>
 			</div>
@@ -504,7 +516,11 @@ function AsyncDataExample() {
 		<section className="examples-section">
 			<h2>Async Data Loading</h2>
 			<div className="examples-grid">
-				<ExampleCard title="Wait for Data" onClick={simulateDataLoad} buttonText="Load Data">
+				<ExampleCard
+					title="Wait for Data"
+					onClick={simulateDataLoad}
+					buttonText="Load Data"
+				>
 					<p>Loading: {loading.toString()}</p>
 					<p>Loaded: {loaded.toString()}</p>
 					<p>Data: {data ? JSON.stringify(data) : 'null'}</p>
@@ -546,7 +562,9 @@ function RaceConditionExample() {
 			new Promise(resolve => setTimeout(() => resolve('timeout-first'), 2000))
 		])
 
-		setRaceResult(`Race result: ${typeof result === 'number' ? `matched value ${result}` : result}`)
+		setRaceResult(
+			`Race result: ${typeof result === 'number' ? `matched value ${result}` : result}`
+		)
 	}
 
 	return (
@@ -570,7 +588,8 @@ function App() {
 		<div className="container">
 			<h1>untiljs React Examples</h1>
 			<p className="description">
-				<strong>Framework Agnostic!</strong> In React, use <code>useUntil</code> hook or custom RefLike objects for proper reactivity.
+				<strong>Framework Agnostic!</strong> In React, use <code>useUntil</code> hook or
+				custom RefLike objects for proper reactivity.
 			</p>
 
 			<BasicExamples />

@@ -209,7 +209,7 @@ await until(() => value).toBe(5) // ❌ Always sees old value
 #### ✅ Correct Way: useUntil Hook
 
 ```tsx
-import { useState, useRef, useCallback } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import until from 'untiljs'
 
 // Custom hook for untiljs
@@ -218,7 +218,9 @@ function useUntil<T>(initialValue: T) {
   const [value, setValue] = useState(initialValue)
 
   const refLike = useRef({
-    get value() { return ref.current },
+    get value() {
+      return ref.current
+    },
     set value(newValue: T) {
       ref.current = newValue
       setValue(newValue)
@@ -260,7 +262,9 @@ function createSubscribable<T>(initialValue: T) {
   const listeners = new Set<(value: T) => void>()
 
   return {
-    get value() { return value },
+    get value() {
+      return value
+    },
     set value(newValue: T) {
       value = newValue
       listeners.forEach(l => l(value))

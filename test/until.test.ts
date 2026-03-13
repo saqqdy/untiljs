@@ -195,7 +195,7 @@ describe('toBe', () => {
 
 		it('should work with getter for target value', async () => {
 			const ref = createRef(0)
-			let target = 3
+			const target = 3
 			const promise = until(ref).toBe(() => target * 2)
 
 			setTimeout(() => {
@@ -713,7 +713,7 @@ describe('not modifier', () => {
 
 	describe('not.toBeUndefined', () => {
 		it('should invert toBeUndefined', async () => {
-			let value: string | undefined = undefined
+			let value: string | undefined
 			const promise = until(() => value).not.toBeUndefined()
 
 			setTimeout(() => {
@@ -737,7 +737,7 @@ describe('not modifier', () => {
 
 	describe('not.changed', () => {
 		it('should invert changed', async () => {
-			let value = 1
+			const value = 1
 			const promise = until(() => value).not.changed({ timeout: 100 })
 
 			// Value doesn't change
