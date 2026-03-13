@@ -5,7 +5,6 @@ import commonjs from '@rollup/plugin-commonjs'
 import terser from '@rollup/plugin-terser'
 import typescript from '@rollup/plugin-typescript'
 import json from '@rollup/plugin-json'
-// import injectCode from 'rollup-plugin-inject-code'
 import filesize from 'rollup-plugin-filesize'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { banner, extensions, reporter } from './config'
@@ -37,14 +36,14 @@ const configs: Config[] = IS_WATCH
 	? [
 			{
 				input: 'src/index.ts',
-				file: 'dist/index.esm.js',
+				file: 'dist/index.mjs',
 				format: 'es',
 				browser: true,
 				env: 'development'
 			},
 			{
 				input: 'src/index.ts',
-				file: 'dist/index.cjs.js',
+				file: 'dist/index.cjs',
 				format: 'cjs',
 				env: 'development'
 			}
@@ -52,26 +51,26 @@ const configs: Config[] = IS_WATCH
 	: [
 			{
 				input: 'src/index.ts',
-				file: 'dist/index.esm.js',
+				file: 'dist/index.mjs',
 				format: 'es',
 				env: 'development'
 			},
 			{
 				input: 'src/index.ts',
-				file: 'dist/index.js',
+				file: 'dist/index.iife.js',
 				format: 'iife',
 				env: 'development'
 			},
 			{
 				input: 'src/index.ts',
-				file: 'dist/index.min.js',
+				file: 'dist/index.iife.min.js',
 				format: 'iife',
 				minify: true,
 				env: 'production'
 			},
 			{
 				input: 'src/index.ts',
-				file: 'dist/index.cjs.js',
+				file: 'dist/index.cjs',
 				format: 'cjs',
 				env: 'development'
 			}
@@ -90,7 +89,7 @@ function createEntry(config: Config) {
 		config.input.endsWith('prod.js')
 
 	const _config: Options = {
-		external: ['vue', 'vue2', 'vue-demi'],
+		external: [],
 		input: config.input,
 		plugins: [],
 		output: {
@@ -99,11 +98,7 @@ function createEntry(config: Config) {
 			exports: 'auto',
 			// extend: true,
 			plugins: [],
-			globals: {
-				vue: 'VueDemi',
-				vue2: 'VueDemi',
-				'vue-demi': 'VueDemi'
-			}
+			globals: {}
 		},
 		onwarn: (msg: any, warn) => {
 			if (!/Circular/.test(msg)) {
@@ -116,15 +111,10 @@ function createEntry(config: Config) {
 
 	if (isGlobalBuild) {
 		_config.output.name = _config.output.name || 'until'
-		// _config.output.plugins.push(
-		// 	injectCode({
-		// 		path: './node_modules/vue-demi/lib/index.iife.js'
-		// 	})
-		// )
 	}
 
 	if (!isGlobalBuild) {
-		_config.external.push('core-js', 'js-cool', 'tslib')
+		_config.external.push('@vue/reactivity', 'core-js', 'js-cool', 'tslib')
 	}
 
 	_config.plugins.push(nodeResolve(), commonjs(), json())

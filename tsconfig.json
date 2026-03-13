@@ -20,5 +20,5 @@
 			"#lib/*": ["./src/*"]
 		}
 	},
-	"exclude": ["**/__tests__", "temp", "*_bak"]
+	"exclude": ["**/test", "temp", "*_bak"]
 }

@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>untiljs - Vanilla JS Examples</title>
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+				max-width: 900px;
+				margin: 0 auto;
+				padding: 20px;
+				background: #f5f5f5;
+			}
+			h1 {
+				color: #2c3e50;
+			}
+			h2 {
+				color: #3498db;
+				margin-top: 30px;
+			}
+			.card {
+				background: white;
+				border-radius: 8px;
+				padding: 15px;
+				margin: 10px 0;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			}
+			.card h3 {
+				margin-top: 0;
+				color: #2c3e50;
+			}
+			button {
+				background: #3498db;
+				color: white;
+				border: none;
+				padding: 8px 16px;
+				border-radius: 4px;
+				cursor: pointer;
+				margin: 5px;
+			}
+			button:hover {
+				background: #2980b9;
+			}
+			.result {
+				background: #f8f9fa;
+				padding: 10px;
+				border-radius: 4px;
+				margin-top: 10px;
+				font-family: monospace;
+				min-height: 20px;
+			}
+			.success {
+				color: #27ae60;
+			}
+			.error {
+				color: #e74c3c;
+			}
+			.value {
+				color: #8e44ad;
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>untiljs - Vanilla JavaScript Examples</h1>
+		<p>untiljs works perfectly with plain JavaScript - no framework required!</p>
+
+		<!-- Basic Usage -->
+		<h2>Basic Usage</h2>
+
+		<div class="card">
+			<h3>toBe - Wait for exact value</h3>
+			<button onclick="testToBe()">Test toBe</button>
+			<div id="toBe-result" class="result">Click to test</div>
+		</div>
+
+		<div class="card">
+			<h3>toMatch - Custom condition</h3>
+			<button onclick="testToMatch()">Test toMatch</button>
+			<div id="toMatch-result" class="result">Click to test</div>
+		</div>
+
+		<div class="card">
+			<h3>toBeTruthy - Wait for truthy value</h3>
+			<button onclick="testTruthy()">Test toBeTruthy</button>
+			<div id="truthy-result" class="result">Click to test</div>
+		</div>
+
+		<!-- Change Detection -->
+		<h2>Change Detection</h2>
+
+		<div class="card">
+			<h3>changed - Detect value change</h3>
+			<button onclick="testChanged()">Test changed</button>
+			<div id="changed-result" class="result">Click to test</div>
+		</div>
+
+		<div class="card">
+			<h3>changedTimes - Multiple changes</h3>
+			<button onclick="testChangedTimes()">Test changedTimes(3)</button>
+			<div id="changedTimes-result" class="result">Click to test</div>
+		</div>
+
+		<!-- Timeout Examples -->
+		<h2>Timeout Options</h2>
+
+		<div class="card">
+			<h3>Timeout with throwOnTimeout</h3>
+			<button onclick="testTimeout()">Test Timeout</button>
+			<div id="timeout-result" class="result">Click to test</div>
+		</div>
+
+		<div class="card">
+			<h3>Timeout returns value</h3>
+			<button onclick="testTimeoutNoThrow()">Test Timeout (no throw)</button>
+			<div id="timeoutNoThrow-result" class="result">Click to test</div>
+		</div>
+
+		<!-- Not Modifier -->
+		<h2>Not Modifier</h2>
+
+		<div class="card">
+			<h3>not.toBe - Inverse matching</h3>
+			<button onclick="testNotToBe()">Test not.toBe</button>
+			<div id="notToBe-result" class="result">Click to test</div>
+		</div>
+
+		<!-- Deep Comparison -->
+		<h2>Deep Comparison</h2>
+
+		<div class="card">
+			<h3>Deep object comparison</h3>
+			<button onclick="testDeepObject()">Test Deep Object</button>
+			<div id="deepObject-result" class="result">Click to test</div>
+		</div>
+
+		<!-- Array Methods -->
+		<h2>Array Methods</h2>
+
+		<div class="card">
+			<h3>toContains - Array contains value</h3>
+			<button onclick="testArrayContains()">Test toContains</button>
+			<div id="arrayContains-result" class="result">Click to test</div>
+		</div>
+
+		<!-- Custom Subscribable -->
+		<h2>Custom Subscribable</h2>
+
+		<div class="card">
+			<h3>Create your own reactive source</h3>
+			<button onclick="testSubscribable()">Test Subscribable</button>
+			<div id="subscribable-result" class="result">Click to test</div>
+		</div>
+
+		<!-- Script -->
+		<script type="module">
+			// Import untiljs from local dist (for demo purposes)
+			// In production, you would use: import until from 'untiljs'
+			// Or via CDN: import until from 'https://unpkg.com/untiljs'
+
+			// For this demo, we'll inline the IIFE version
+			// In a real project, include: <script src="https://unpkg.com/untiljs/dist/index.iife.min.js"><\/script>
+
+			// Simulating the IIFE export for demo
+			// In production, use the actual library
+			import until from '../../dist/index.mjs'
+
+			// Make it globally available for the onclick handlers
+			window.until = until
+
+			// Basic Usage Examples
+			window.testToBe = async function () {
+				const resultEl = document.getElementById('toBe-result')
+				resultEl.textContent = 'Waiting...'
+				resultEl.className = 'result'
+
+				let value = 0
+				setTimeout(() => {
+					value = 5
+				}, 1000)
+
+				await until(() => value).toBe(5)
+				resultEl.innerHTML = `<span class="success">Success!</span> Value is now <span class="value">${value}</span>`
+			}
+
+			window.testToMatch = async function () {
+				const resultEl = document.getElementById('toMatch-result')
+				resultEl.textContent = 'Waiting...'
+				resultEl.className = 'result'
+
+				let value = 0
+				setTimeout(() => {
+					value = 10
+				}, 1000)
+
+				await until(() => value).toMatch(v => v > 5)
+				resultEl.innerHTML = `<span class="success">Success!</span> Value <span class="value">${value}</span> is greater than 5`
+			}
+
+			window.testTruthy = async function () {
+				const resultEl = document.getElementById('truthy-result')
+				resultEl.textContent = 'Waiting...'
+				resultEl.className = 'result'
+
+				let value = null
+				setTimeout(() => {
+					value = { name: 'John' }
+				}, 1000)
+
+				await until(() => value).toBeTruthy()
+				resultEl.innerHTML = `<span class="success">Success!</span> Got object: <span class="value">${JSON.stringify(value)}</span>`
+			}
+
+			// Change Detection Examples
+			window.testChanged = async function () {
+				const resultEl = document.getElementById('changed-result')
+				resultEl.textContent = 'Waiting...'
+				resultEl.className = 'result'
+
+				let value = 'initial'
+				setTimeout(() => {
+					value = 'changed!'
+				}, 1000)
+
+				await until(() => value).changed()
+				resultEl.innerHTML = `<span class="success">Success!</span> Value changed to <span class="value">"${value}"</span>`
+			}
+
+			window.testChangedTimes = async function () {
+				const resultEl = document.getElementById('changedTimes-result')
+				resultEl.textContent = 'Waiting...'
+				resultEl.className = 'result'
+
+				let value = 0
+				let count = 0
+
+				const interval = setInterval(() => {
+					value++
+					count++
+				}, 200)
+
+				await until(() => value).changedTimes(3)
+				clearInterval(interval)
+
+				resultEl.innerHTML = `<span class="success">Success!</span> Value changed ${count} times, final: <span class="value">${value}</span>`
+			}
+
+			// Timeout Examples
+			window.testTimeout = async function () {
+				const resultEl = document.getElementById('timeout-result')
+				resultEl.textContent = 'Waiting...'
+				resultEl.className = 'result'
+
+				let value = 0
+
+				try {
+					await until(() => value).toBe(5, { timeout: 500, throwOnTimeout: true })
+					resultEl.innerHTML = `<span class="error">Unexpected success</span>`
+				} catch (e) {
+					resultEl.innerHTML = `<span class="error">Timeout!</span> Error: ${e.message || e}`
+				}
+			}
+
+			window.testTimeoutNoThrow = async function () {
+				const resultEl = document.getElementById('timeoutNoThrow-result')
+				resultEl.textContent = 'Waiting...'
+				resultEl.className = 'result'
+
+				let value = 0
+
+				const result = await until(() => value).toBe(5, { timeout: 500 })
+				resultEl.innerHTML = `Timeout returned current value: <span class="value">${result}</span>`
+			}
+
+			// Not Modifier Examples
+			window.testNotToBe = async function () {
+				const resultEl = document.getElementById('notToBe-result')
+				resultEl.textContent = 'Waiting...'
+				resultEl.className = 'result'
+
+				let value = 5
+				setTimeout(() => {
+					value = 10
+				}, 1000)
+
+				await until(() => value).not.toBe(5)
+				resultEl.innerHTML = `<span class="success">Success!</span> Value is no longer 5, it's <span class="value">${value}</span>`
+			}
+
+			// Deep Comparison Examples
+			window.testDeepObject = async function () {
+				const resultEl = document.getElementById('deepObject-result')
+				resultEl.textContent = 'Waiting...'
+				resultEl.className = 'result'
+
+				let obj = { user: { name: 'Alice' } }
+				setTimeout(() => {
+					obj = { user: { name: 'Bob' } }
+				}, 1000)
+
+				await until(() => obj).toMatch(v => v.user.name === 'Bob', { deep: true })
+				resultEl.innerHTML = `<span class="success">Success!</span> Deep object: <span class="value">${JSON.stringify(obj)}</span>`
+			}
+
+			// Array Methods Examples
+			window.testArrayContains = async function () {
+				const resultEl = document.getElementById('arrayContains-result')
+				resultEl.textContent = 'Waiting...'
+				resultEl.className = 'result'
+
+				let arr = ['apple', 'banana']
+				setTimeout(() => {
+					arr = [...arr, 'orange', 'grape']
+				}, 1000)
+
+				await until(() => arr).toContains('orange')
+				resultEl.innerHTML = `<span class="success">Success!</span> Array now contains 'orange': <span class="value">[${arr.join(', ')}]</span>`
+			}
+
+			// Custom Subscribable Example
+			window.testSubscribable = async function () {
+				const resultEl = document.getElementById('subscribable-result')
+				resultEl.textContent = 'Waiting...'
+				resultEl.className = 'result'
+
+				// Create a custom Subscribable
+				let internalValue = 0
+				const listeners = new Set()
+
+				const subscribable = {
+					get value() {
+						return internalValue
+					},
+					set value(newValue) {
+						internalValue = newValue
+						listeners.forEach(cb => cb(newValue))
+					},
+					subscribe(callback) {
+						listeners.add(callback)
+						callback(internalValue) // Initial call
+						return () => listeners.delete(callback)
+					}
+				}
+
+				setTimeout(() => {
+					subscribable.value = 42
+				}, 1000)
+
+				await until(subscribable).toBe(42)
+				resultEl.innerHTML = `<span class="success">Success!</span> Subscribable value: <span class="value">${subscribable.value}</span>`
+			}
+
+			console.log('untiljs Vanilla JS Examples loaded!')
+			console.log(
+				'Available methods: toBe, toMatch, toBeTruthy, toBeNull, toBeUndefined, toBeNaN, changed, changedTimes, toContains'
+			)
+			console.log('Use not.* for inverse matching')
+		</script>
+	</body>
+</html>

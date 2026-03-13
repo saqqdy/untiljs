@@ -1,19 +1,17 @@
 {
 	"name": "untiljs",
 	"description": "Promised one-time watch for changes",
-	"version": "1.1.0",
+	"type": "module",
+	"version": "2.0.0",
 	"packageManager": "pnpm@8.9.0",
-	"main": "dist/index.cjs.js",
-	"module": "dist/index.esm.js",
-	"browser": "dist/index.esm.js",
-	"unpkg": "dist/index.min.js",
-	"jsdelivr": "dist/index.min.js",
+	"main": "dist/index.cjs",
+	"module": "dist/index.mjs",
+	"unpkg": "dist/index.iife.min.js",
+	"jsdelivr": "dist/index.iife.min.js",
 	"types": "dist/index.d.ts",
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
-			"module": "./dist/index.esm.js",
-			"require": "./dist/index.cjs.js",
+			"require": "./dist/index.cjs",
 			"import": "./dist/index.mjs"
 		},
 		"./*": "./*"
@@ -28,29 +26,28 @@
 	],
 	"scripts": {
 		"build": "run-s clean build:{bundle,types}",
-		"build:bundle": "tscjs scripts/build",
+		"build:bundle": "tsx scripts/build",
 		"build:types": "tsc -p src/tsconfig.json && pnpm roll-types",
 		"build:docs": "rm-all docs && typedoc && prettier --write \"**/*.md\"",
 		"deploy": "sh scripts/deploy.sh",
 		"roll-types": "api-extractor run && rm-all temp",
 		"watch": "pnpm build:bundle -w",
-		"pub": "tscjs scripts/publish",
-		"unpub": "tscjs scripts/unpublish",
-		"sync": "tscjs scripts/sync",
+		"pub": "tsx scripts/publish",
+		"unpub": "tsx scripts/unpublish",
+		"sync": "tsx scripts/sync",
 		"workflow:publish-test": "zx scripts/workflow.mjs",
 		"clean": "rm-all dist es lib",
 		"dist": "run-s eslint prettier build",
-		"test-unit": "jest --filter ./scripts/filter-unit.js",
-		"jest": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --coverage",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage",
 		"coveralls": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
 		"eslint": "eslint --fix .",
 		"prettier": "prettier --write \"**/*.{js,ts,jsx,tsx,yml,json,md}\""
 	},
 	"dependencies": {
-		"@uni-use/shared": "^1.5.1",
 		"js-cool": "^5.23.1",
-		"tslib": "^2.8.1",
-		"vue-demi": "^0.14.10"
+		"tslib": "^2.8.1"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.26.0",
@@ -66,6 +63,7 @@
 		"@rollup/plugin-typescript": "^12.1.2",
 		"@types/jest": "^29.5.14",
 		"@types/node": "^22.10.7",
+		"@vitest/coverage-v8": "^1.6.0",
 		"chalk": "^5.4.1",
 		"core-js": "^3.40.0",
 		"coveralls": "^3.1.1",
@@ -80,27 +78,17 @@
 		"reinstaller": "^3.0.2",
 		"rm-all": "^1.1.1",
 		"rollup": "^4.31.0",
+		"rollup-plugin-esbuild": "^6.1.1",
 		"rollup-plugin-filesize": "^10.0.0",
-		"rollup-plugin-inject-code": "^1.1.0",
 		"rollup-plugin-visualizer": "^5.14.0",
 		"ts-jest": "^29.2.5",
 		"ts-morph": "^25.0.0",
-		"tsnd": "^1.1.0",
+		"tsx": "^4.19.2",
 		"typedoc": "^0.27.6",
 		"typedoc-plugin-markdown": "^4.4.1",
 		"typescript": "^5.7.3",
-		"vue": "~3.4.38",
-		"vue2": "npm:vue@^2.7.16",
+		"vitest": "^1.6.0",
 		"zx": "^8.3.0"
-	},
-	"peerDependencies": {
-		"@vue/composition-api": ">=1.0.0",
-		"vue": "^2.0.0 || >=3.0.0"
-	},
-	"peerDependenciesMeta": {
-		"@vue/composition-api": {
-			"optional": true
-		}
 	},
 	"sideEffects": false,
 	"pnpm": {

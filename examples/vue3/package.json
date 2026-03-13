@@ -1,0 +1,20 @@
+{
+	"name": "untiljs-vue3-demo",
+	"type": "module",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview",
+		"link:untiljs": "pnpm link ../../"
+	},
+	"dependencies": {
+		"untiljs": "link:../..",
+		"vue": "^3.5.13"
+	},
+	"devDependencies": {
+		"@vitejs/plugin-vue": "^5.1.2",
+		"vite": "^5.4.0"
+	}
+}

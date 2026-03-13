@@ -1,12 +1,11 @@
-import { nextTick, watch } from 'vue-demi'
 import { waiting } from 'js-cool'
-import type { WatchSource } from 'vue-demi'
-import { toValue } from '@uni-use/shared'
-import type { UntilToMatchOptions } from './types'
+import type { UntilToMatchOptions, WatchSource } from './types'
+import { deepEqual, watchSource } from './utils'
 
 export class UntilBase<T, Not extends boolean = false> {
-	r: WatchSource<T>
-	isNot: boolean = false
+	protected r: WatchSource<T>
+	protected isNot: boolean = false
+
 	constructor(r: WatchSource<T>, isNot: boolean = false) {
 		this.r = r
 		this.isNot = isNot ?? false
@@ -23,26 +22,22 @@ export class UntilBase<T, Not extends boolean = false> {
 	// ): Promise<T>
 
 	toMatch<U extends T = T>(
-		// condition: ((v: T) => v is U) | ((v: T) => boolean),
 		condition: (v: T) => boolean,
-		{ flush = 'sync', deep = false, timeout, throwOnTimeout }: UntilToMatchOptions = {}
+		{ deep = false, timeout, throwOnTimeout }: UntilToMatchOptions = {}
 	): Not extends true ? Promise<Exclude<T, U>> : Promise<U> {
 		let stop: (() => void) | null = null
+
 		const watcher = new Promise<T>(resolve => {
-			stop = watch(
+			stop = watchSource(
 				this.r,
 				v => {
-					if (condition(v) !== this.isNot) {
-						if (stop) stop()
-						else nextTick(() => stop?.())
+					const matches = condition(v)
+					if (matches !== this.isNot) {
+						stop?.()
 						resolve(v)
 					}
 				},
-				{
-					flush,
-					deep,
-					immediate: true
-				}
+				{ immediate: true, deep }
 			)
 		})
 
@@ -50,13 +45,27 @@ export class UntilBase<T, Not extends boolean = false> {
 
 		if (timeout != null) {
 			promises.push(
-				waiting(timeout, throwOnTimeout)
-					.then(() => toValue(this.r))
-					.finally(() => stop?.())
+				waiting(timeout, throwOnTimeout).then(() => {
+					stop?.()
+					return this.getValue()
+				})
 			)
 		}
 
 		return Promise.race(promises) as Not extends true ? Promise<Exclude<T, U>> : Promise<U>
+	}
+
+	/**
+	 * Get the current value from the watch source
+	 */
+	protected getValue(): T {
+		if (typeof this.r === 'function') {
+			return (this.r as () => T)()
+		}
+		if (this.r !== null && typeof this.r === 'object' && 'value' in this.r) {
+			return (this.r as { value: T }).value
+		}
+		return this.r
 	}
 
 	changed(options?: UntilToMatchOptions) {
@@ -64,9 +73,26 @@ export class UntilBase<T, Not extends boolean = false> {
 	}
 
 	changedTimes(n: number = 1, options?: UntilToMatchOptions) {
-		let count = -1 // skip the immediate check
-		return this.toMatch(() => {
-			count += 1
+		let count = 0,
+			previousValue: T | undefined,
+			isFirst = true
+
+		return this.toMatch(v => {
+			if (isFirst) {
+				isFirst = false
+				previousValue = v
+				return false
+			}
+
+			const hasChanged = options?.deep
+				? !deepEqual(previousValue, v, options.deep)
+				: !Object.is(previousValue, v)
+
+			if (hasChanged) {
+				count += 1
+				previousValue = v
+			}
+
 			return count >= n
 		}, options)
 	}
