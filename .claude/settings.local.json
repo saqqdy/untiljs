@@ -7,7 +7,8 @@
       "Bash(pnpm test:*)",
       "Bash(pnpm add:*)",
       "Bash(pnpm lint:*)",
-      "Bash(pnpm build:*)"
+      "Bash(pnpm build:*)",
+      "Bash(pnpm info:*)"
     ]
   }
 }

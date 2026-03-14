@@ -6,15 +6,17 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- **Upgraded ESLint**: Migrated to `@eslint-sets/eslint-config@6.0.0-beta.5` with ESLint 9 support
+- **Upgraded ESLint**: Migrated to `@eslint-sets/eslint-config@6.0.0` with ESLint 9 support
 - **Upgraded Vitest**: Updated to Vitest 4.1.0 with latest `@vitest/coverage-v8`
 - **Upgraded esbuild**: Added esbuild 0.27.4 for better build performance
+- **Upgraded @rollup/plugin-babel**: Updated to 7.0.0 for Rollup 4 support
 
 ### Removed
 
 - **Removed Prettier**: No longer needed, formatting is handled by ESLint
 - **Removed Jest**: Fully migrated to Vitest for testing
 - **Removed `jest.config.js`**: Jest configuration file deleted
+- **Removed coveralls**: Using Vitest built-in coverage instead
 
 ### Fixed
 
