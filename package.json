@@ -2,7 +2,7 @@
 	"name": "untiljs",
 	"description": "Promised one-time watch for changes",
 	"type": "module",
-	"version": "2.1.0",
+	"version": "2.1.1",
 	"packageManager": "pnpm@8.9.0",
 	"main": "dist/index.cjs",
 	"module": "dist/index.mjs",
