@@ -39,7 +39,10 @@
 ## 体验
 
 在线体验 untiljs 搭配使用 vue3.0 [Edit in CodeSandbox](https://codesandbox.io/p/sandbox/github/saqqdy/untiljs/tree/master/examples/vue3)
+在线体验 untiljs 搭配使用 vue2.7 [Edit in CodeSandbox](https://codesandbox.io/p/sandbox/github/saqqdy/untiljs/tree/master/examples/vue2)
 在线体验 untiljs 搭配使用 react [Edit in CodeSandbox](https://codesandbox.io/p/sandbox/github/saqqdy/untiljs/tree/master/examples/react)
+在线体验 untiljs 搭配使用 angular [Edit in CodeSandbox](https://codesandbox.io/p/sandbox/github/saqqdy/untiljs/tree/master/examples/angular)
+在线体验 untiljs 搭配使用 svelte [Edit in CodeSandbox](https://codesandbox.io/p/sandbox/github/saqqdy/untiljs/tree/master/examples/svelte)
 
 ## 安装
 
@@ -304,6 +307,141 @@ function MyComponent() {
   return <button onClick={handleClick}>测试</button>
 }
 ```
+
+### Angular 集成
+
+Angular 19+ signals 配合 getter 函数使用：
+
+```typescript
+import { Component, signal } from '@angular/core'
+import until from 'untiljs'
+
+@Component({
+  selector: 'app-example',
+  template: `
+    <p>Count: {{ count() }}</p>
+    <button (click)="waitForValue()">等待 5</button>
+  `
+})
+export class ExampleComponent {
+  count = signal(0)
+
+  async waitForValue() {
+    this.count.set(0)
+    setTimeout(() => this.count.set(5), 1000)
+
+    // signals 使用 getter 函数
+    await until(() => this.count()).toBe(5)
+    console.log('Count 达到 5!')
+  }
+}
+```
+
+#### 在 Angular 中使用 `createStore`
+
+```typescript
+import { Component } from '@angular/core'
+import { createStore } from 'untiljs'
+import until from 'untiljs'
+
+@Component({
+  selector: 'app-example',
+  template: `<button (click)="test()">测试</button>`
+})
+export class ExampleComponent {
+  private store = createStore(0)
+
+  async test() {
+    this.store.value = 0
+    setTimeout(() => this.store.value = 5, 1000)
+
+    // store 直接配合 until 使用
+    await until(this.store).toBe(5)
+  }
+}
+```
+
+### Svelte 集成
+
+Svelte 5 runes 配合 getter 函数使用：
+
+```svelte
+<script>
+  import until from 'untiljs'
+
+  let count = $state(0)
+
+  async function waitForValue() {
+    count = 0
+    setTimeout(() => count = 5, 1000)
+
+    // $state 使用 getter 函数
+    await until(() => count).toBe(5)
+    console.log('Count 达到 5!')
+  }
+</script>
+
+<p>Count: {count}</p>
+<button onclick={waitForValue}>等待 5</button>
+```
+
+#### 在 Svelte 中使用 `createStore`
+
+```svelte
+<script>
+  import { createStore } from 'untiljs'
+  import until from 'untiljs'
+
+  const store = createStore(0)
+  let storeValue = $state(store.value)
+
+  // 订阅变化
+  $effect(() => {
+    return store.subscribe(value => storeValue = value)
+  })
+
+  async function test() {
+    store.value = 0
+    setTimeout(() => store.value = 5, 1000)
+    await until(store).toBe(5)
+  }
+</script>
+```
+
+### Vue 2 集成
+
+Vue 2.7+ 原生支持 Composition API：
+
+```vue
+<script>
+import { ref } from 'vue'
+import until from 'untiljs'
+
+export default {
+  setup() {
+    const count = ref(0)
+
+    const waitForValue = async () => {
+      count.value = 0
+      setTimeout(() => count.value = 5, 1000)
+
+      // ref 使用 getter 函数
+      await until(() => count.value).toBe(5)
+      console.log('Count 达到 5!')
+    }
+
+    return { count, waitForValue }
+  }
+}
+</script>
+
+<template>
+  <p>Count: {{ count }}</p>
+  <button @click="waitForValue">等待 5</button>
+</template>
+```
+
+> **注意**：Vue 2.6 及以下版本需要安装 `@vue/composition-api` 插件，并从 `@vue/composition-api` 导入而非 `vue`。
 
 ### RxJS 集成
 

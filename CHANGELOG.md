@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [2.1.1] - 2025-03-14
 
+### Added
+
+- **Angular Example**: New example demonstrating usage with Angular 19+ and signals (built with Vite via `@analogjs/vite-plugin-angular`)
+- **Svelte Example**: New example demonstrating usage with Svelte 5 runes (`$state`, `$effect`)
+- **Vue 2 Example**: New example demonstrating usage with Vue 2.7 Composition API (includes note for Vue 2.6 and below requiring `@vue/composition-api`)
+
 ### Changed
 
 - **Upgraded ESLint**: Migrated to `@eslint-sets/eslint-config@6.0.0` with ESLint 9 support

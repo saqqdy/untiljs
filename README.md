@@ -39,7 +39,10 @@ Promise-based one-time watch for changes - **Framework Agnostic**
 ## Experience Online
 
 - [Vue 3 Example (CodeSandbox)](https://codesandbox.io/p/sandbox/github/saqqdy/untiljs/tree/master/examples/vue3)
+- [Vue 2 Example (CodeSandbox)](https://codesandbox.io/p/sandbox/github/saqqdy/untiljs/tree/master/examples/vue2)
 - [React Example (CodeSandbox)](https://codesandbox.io/p/sandbox/github/saqqdy/untiljs/tree/master/examples/react)
+- [Angular Example (CodeSandbox)](https://codesandbox.io/p/sandbox/github/saqqdy/untiljs/tree/master/examples/angular)
+- [Svelte Example (CodeSandbox)](https://codesandbox.io/p/sandbox/github/saqqdy/untiljs/tree/master/examples/svelte)
 
 ## Installation
 
@@ -306,6 +309,141 @@ function MyComponent() {
   return <button onClick={handleClick}>Test</button>
 }
 ```
+
+### Angular Integration
+
+Angular 19+ signals work with getter functions:
+
+```typescript
+import { Component, signal } from '@angular/core'
+import until from 'untiljs'
+
+@Component({
+  selector: 'app-example',
+  template: `
+    <p>Count: {{ count() }}</p>
+    <button (click)="waitForValue()">Wait for 5</button>
+  `
+})
+export class ExampleComponent {
+  count = signal(0)
+
+  async waitForValue() {
+    this.count.set(0)
+    setTimeout(() => this.count.set(5), 1000)
+
+    // Use getter function with signals
+    await until(() => this.count()).toBe(5)
+    console.log('Count reached 5!')
+  }
+}
+```
+
+#### Using `createStore` in Angular
+
+```typescript
+import { Component } from '@angular/core'
+import { createStore } from 'untiljs'
+import until from 'untiljs'
+
+@Component({
+  selector: 'app-example',
+  template: `<button (click)="test()">Test</button>`
+})
+export class ExampleComponent {
+  private store = createStore(0)
+
+  async test() {
+    this.store.value = 0
+    setTimeout(() => this.store.value = 5, 1000)
+
+    // Store works directly with until
+    await until(this.store).toBe(5)
+  }
+}
+```
+
+### Svelte Integration
+
+Svelte 5 runes work with getter functions:
+
+```svelte
+<script>
+  import until from 'untiljs'
+
+  let count = $state(0)
+
+  async function waitForValue() {
+    count = 0
+    setTimeout(() => count = 5, 1000)
+
+    // Use getter function with $state
+    await until(() => count).toBe(5)
+    console.log('Count reached 5!')
+  }
+</script>
+
+<p>Count: {count}</p>
+<button onclick={waitForValue}>Wait for 5</button>
+```
+
+#### Using `createStore` in Svelte
+
+```svelte
+<script>
+  import { createStore } from 'untiljs'
+  import until from 'untiljs'
+
+  const store = createStore(0)
+  let storeValue = $state(store.value)
+
+  // Subscribe to changes
+  $effect(() => {
+    return store.subscribe(value => storeValue = value)
+  })
+
+  async function test() {
+    store.value = 0
+    setTimeout(() => store.value = 5, 1000)
+    await until(store).toBe(5)
+  }
+</script>
+```
+
+### Vue 2 Integration
+
+Vue 2.7+ supports Composition API natively:
+
+```vue
+<script>
+import { ref } from 'vue'
+import until from 'untiljs'
+
+export default {
+  setup() {
+    const count = ref(0)
+
+    const waitForValue = async () => {
+      count.value = 0
+      setTimeout(() => count.value = 5, 1000)
+
+      // Use getter function with ref
+      await until(() => count.value).toBe(5)
+      console.log('Count reached 5!')
+    }
+
+    return { count, waitForValue }
+  }
+}
+</script>
+
+<template>
+  <p>Count: {{ count }}</p>
+  <button @click="waitForValue">Wait for 5</button>
+</template>
+```
+
+> **Note**: Vue 2.6 and below require `@vue/composition-api` plugin. Import from `@vue/composition-api` instead of `vue`.
 
 ### RxJS Integration
 
