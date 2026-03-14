@@ -16,15 +16,15 @@ export type AnyFn = (...args: any[]) => any
  */
 export interface Subscribable<T> {
 	/**
-	 * The current value
-	 */
-	readonly value: T
-	/**
 	 * Subscribe to value changes
 	 * @param callback Function to call when value changes
 	 * @returns Unsubscribe function
 	 */
-	subscribe(callback: (value: T) => void): () => void
+	subscribe: (callback: (value: T) => void) => () => void
+	/**
+	 * The current value
+	 */
+	readonly value: T
 }
 
 /**
@@ -44,10 +44,14 @@ export type WatchSource<T> = Subscribable<T> | RefLike<T> | (() => T) | T
  */
 export interface UntilToMatchOptions {
 	/**
-	 * Milliseconds timeout for promise to resolve/reject if the when condition does not meet.
-	 * 0 for never timed out
+	 * Deep comparison option
+	 * - true: deep compare objects/arrays
+	 * - number: deep compare up to specified depth
+	 * - false: shallow comparison (default)
+	 *
+	 * @default false
 	 */
-	timeout?: number
+	deep?: boolean | number
 
 	/**
 	 * Reject the promise when timeout
@@ -57,14 +61,10 @@ export interface UntilToMatchOptions {
 	throwOnTimeout?: boolean
 
 	/**
-	 * Deep comparison option
-	 * - true: deep compare objects/arrays
-	 * - number: deep compare up to specified depth
-	 * - false: shallow comparison (default)
-	 *
-	 * @default false
+	 * Milliseconds timeout for promise to resolve/reject if the when condition does not meet.
+	 * 0 for never timed out
 	 */
-	deep?: boolean | number
+	timeout?: number
 }
 
 export declare type Falsy = false | void | null | undefined | 0 | 0n | ''

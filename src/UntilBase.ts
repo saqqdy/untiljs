@@ -1,5 +1,5 @@
-import { waiting } from 'js-cool'
 import type { UntilToMatchOptions, WatchSource } from './types'
+import { waiting } from 'js-cool'
 import { deepEqual, watchSource } from './utils'
 
 export class UntilBase<T, Not extends boolean = false> {
@@ -23,21 +23,22 @@ export class UntilBase<T, Not extends boolean = false> {
 
 	toMatch<U extends T = T>(
 		condition: (v: T) => boolean,
-		{ deep = false, timeout, throwOnTimeout }: UntilToMatchOptions = {}
+		{ deep = false, throwOnTimeout, timeout }: UntilToMatchOptions = {},
 	): Not extends true ? Promise<Exclude<T, U>> : Promise<U> {
 		let stop: (() => void) | null = null
 
-		const watcher = new Promise<T>(resolve => {
+		const watcher = new Promise<T>((resolve) => {
 			stop = watchSource(
 				this.r,
-				v => {
+				(v) => {
 					const matches = condition(v)
+
 					if (matches !== this.isNot) {
 						stop?.()
 						resolve(v)
 					}
 				},
-				{ immediate: true, deep }
+				{ deep, immediate: true },
 			)
 		})
 
@@ -47,8 +48,9 @@ export class UntilBase<T, Not extends boolean = false> {
 			promises.push(
 				waiting(timeout, throwOnTimeout).then(() => {
 					stop?.()
+
 					return this.getValue()
-				})
+				}),
 			)
 		}
 
@@ -65,6 +67,7 @@ export class UntilBase<T, Not extends boolean = false> {
 		if (this.r !== null && typeof this.r === 'object' && 'value' in this.r) {
 			return (this.r as { value: T }).value
 		}
+
 		return this.r
 	}
 
@@ -77,10 +80,11 @@ export class UntilBase<T, Not extends boolean = false> {
 			previousValue: T | undefined,
 			isFirst = true
 
-		return this.toMatch(v => {
+		return this.toMatch((v) => {
 			if (isFirst) {
 				isFirst = false
 				previousValue = v
+
 				return false
 			}
 
@@ -99,6 +103,7 @@ export class UntilBase<T, Not extends boolean = false> {
 
 	get not() {
 		this.isNot = !this.isNot
+
 		return this
 	}
 }

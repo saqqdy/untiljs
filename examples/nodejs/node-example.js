@@ -4,8 +4,8 @@
  * Run this file with: node examples/nodejs/node-example.mjs
  */
 
-import { EventEmitter } from 'events'
-import { setTimeout as sleep } from 'timers/promises'
+import { EventEmitter } from 'node:events'
+import { setTimeout as sleep } from 'node:timers/promises'
 import until from '../../dist/index.mjs'
 
 console.log('='.repeat(60))
@@ -49,7 +49,7 @@ async function example2_eventEmitter() {
 	let status = 'pending'
 
 	// Update status when event fires
-	emitter.on('ready', newStatus => {
+	emitter.on('ready', (newStatus) => {
 		status = newStatus
 	})
 
@@ -73,7 +73,7 @@ async function example3_processState() {
 	const processes = ['process1', 'process2']
 
 	// Wait for at least 3 processes
-	const promise = until(() => processes.length).toMatch(n => n >= 3)
+	const promise = until(() => processes.length).toMatch((n) => n >= 3)
 
 	// Add processes
 	setTimeout(() => {
@@ -104,6 +104,7 @@ async function example4_pollingWithTimeout() {
 
 	// Wait with timeout
 	const result = await until(() => resource).toBeTruthy({ timeout: 500 })
+
 	console.log(`✓ Resource loaded: ${JSON.stringify(result)}`)
 	console.log()
 }
@@ -121,20 +122,21 @@ async function example5_customSubscribable() {
 		const observers = new Set()
 
 		return {
+			next(newValue) {
+				this.value = newValue
+			},
+			subscribe(callback) {
+				observers.add(callback)
+				callback(value) // Initial call
+
+				return () => observers.delete(callback)
+			},
 			get value() {
 				return value
 			},
 			set value(newValue) {
 				value = newValue
-				observers.forEach(cb => cb(value))
-			},
-			subscribe(callback) {
-				observers.add(callback)
-				callback(value) // Initial call
-				return () => observers.delete(callback)
-			},
-			next(newValue) {
-				this.value = newValue
+				observers.forEach((cb) => cb(value))
 			}
 		}
 	}
@@ -201,7 +203,7 @@ async function example7_deepComparison() {
 	}, 500)
 
 	// Wait for server to be running with deep comparison
-	await until(() => config).toMatch(c => c.server.status === 'running', { deep: true })
+	await until(() => config).toMatch((c) => c.server.status === 'running', { deep: true })
 
 	console.log(`✓ Server status: ${config.server.status}`)
 	console.log()
@@ -260,7 +262,7 @@ async function example10_promiseRace() {
 	let response = null
 
 	// Simulate API response
-	const apiResponse = new Promise(resolve => {
+	const apiResponse = new Promise((resolve) => {
 		setTimeout(() => {
 			response = { data: 'success' }
 			resolve(response)

@@ -1,4 +1,4 @@
-import { spawn } from 'child_process'
+import { spawn } from 'node:child_process'
 // import { cp } from '@node-kit/extra.fs'
 
 async function run() {
@@ -8,9 +8,9 @@ async function run() {
 async function build() {
 	await spawn(
 		'rollup',
-		// ['-c', 'build/rollup.config.ts', '--configPlugin', 'rollup-plugin-esbuild'],
-		['-c', 'build/rollup.config.ts', '--configPlugin', '@rollup/plugin-typescript'],
-		{ stdio: 'inherit' }
+		['-c', 'build/rollup.config.ts', '--configPlugin', 'rollup-plugin-esbuild'],
+		// ['-c', 'build/rollup.config.ts', '--configPlugin', '@rollup/plugin-typescript'],
+		{ stdio: 'inherit' },
 	)
 }
 

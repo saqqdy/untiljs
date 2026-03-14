@@ -60,20 +60,21 @@ export function createStore<T>(initialValue: T): Store<T> {
 	const listeners = new Set<(value: T) => void>()
 
 	return {
+		subscribe(callback: (value: T) => void): () => void {
+			listeners.add(callback)
+			// Call immediately with current value
+			callback(value)
+
+			return () => listeners.delete(callback)
+		},
 		get value() {
 			return value
 		},
 		set value(newValue: T) {
 			if (Object.is(value, newValue)) return
 			value = newValue
-			listeners.forEach(listener => listener(value))
+			listeners.forEach((listener) => listener(value))
 		},
-		subscribe(callback: (value: T) => void): () => void {
-			listeners.add(callback)
-			// Call immediately with current value
-			callback(value)
-			return () => listeners.delete(callback)
-		}
 	}
 }
 
@@ -82,10 +83,10 @@ export function createStore<T>(initialValue: T): Store<T> {
  */
 export function isSubscribable<T>(value: unknown): value is Subscribable<T> {
 	return (
-		value !== null &&
-		typeof value === 'object' &&
-		'value' in value &&
-		typeof (value as Subscribable<T>).subscribe === 'function'
+		value !== null
+		&& typeof value === 'object'
+		&& 'value' in value
+		&& typeof (value as Subscribable<T>).subscribe === 'function'
 	)
 }
 
@@ -117,6 +118,7 @@ export function toValue<T>(source: WatchSource<T>): T {
 	if (isGetter<T>(source)) {
 		return source()
 	}
+
 	return source
 }
 
@@ -145,6 +147,7 @@ export function deepEqual(a: unknown, b: unknown, depth: boolean | number = true
 
 	// Handle depth limit
 	const maxDepth = typeof depth === 'number' ? depth : depth === true ? Infinity : 0
+
 	if (maxDepth <= 0) {
 		// At depth limit, use shallow comparison (reference equality already checked above)
 		return false
@@ -153,6 +156,7 @@ export function deepEqual(a: unknown, b: unknown, depth: boolean | number = true
 	// Compare arrays
 	if (Array.isArray(a) && Array.isArray(b)) {
 		if (a.length !== b.length) return false
+
 		return a.every((item, index) => deepEqual(item, b[index], maxDepth - 1))
 	}
 
@@ -165,13 +169,13 @@ export function deepEqual(a: unknown, b: unknown, depth: boolean | number = true
 
 	if (keysA.length !== keysB.length) return false
 
-	return keysA.every(key => {
+	return keysA.every((key) => {
 		return (
-			Object.prototype.hasOwnProperty.call(b, key) &&
-			deepEqual(
+			Object.prototype.hasOwnProperty.call(b, key)
+			&& deepEqual(
 				(a as Record<string, unknown>)[key],
 				(b as Record<string, unknown>)[key],
-				maxDepth - 1
+				maxDepth - 1,
 			)
 		)
 	})
@@ -188,22 +192,23 @@ export function deepEqual(a: unknown, b: unknown, depth: boolean | number = true
 export function watchSource<T>(
 	source: WatchSource<T>,
 	callback: (value: T) => void,
-	options: { immediate?: boolean; deep?: boolean | number } = {}
+	options: { immediate?: boolean; deep?: boolean | number } = {},
 ): () => void {
-	const { immediate = true, deep = false } = options
+	const { deep = false, immediate = true } = options
 
 	// Handle Subscribable
 	if (isSubscribable<T>(source)) {
 		let previousValue: T | undefined,
 			isFirstCall = true
 
-		const unsubscribe = source.subscribe(value => {
+		const unsubscribe = source.subscribe((value) => {
 			if (isFirstCall) {
 				isFirstCall = false
 				if (immediate) {
 					callback(value)
 				}
 				previousValue = value
+
 				return
 			}
 
@@ -244,6 +249,7 @@ export function watchSource<T>(
 					if (immediate) {
 						callback(value)
 					}
+
 					return
 				}
 
@@ -274,6 +280,7 @@ export function watchSource<T>(
 				checkValue()
 				requestAnimationFrame(checkInRAF)
 			}
+
 			requestAnimationFrame(checkInRAF)
 		} else if (typeof setImmediate !== 'undefined') {
 			const checkInImmediate = () => {
@@ -281,6 +288,7 @@ export function watchSource<T>(
 				checkValue()
 				setImmediate(checkInImmediate)
 			}
+
 			setImmediate(checkInImmediate)
 		} else if (typeof process !== 'undefined' && typeof process.nextTick === 'function') {
 			const checkInNextTick = () => {
@@ -288,6 +296,7 @@ export function watchSource<T>(
 				checkValue()
 				process.nextTick(checkInNextTick)
 			}
+
 			process.nextTick(checkInNextTick)
 		} else {
 			// Fallback to setInterval
@@ -321,6 +330,7 @@ export function watchSource<T>(
 					if (immediate) {
 						callback(value)
 					}
+
 					return
 				}
 
@@ -351,6 +361,7 @@ export function watchSource<T>(
 				checkValue()
 				requestAnimationFrame(checkInRAF)
 			}
+
 			requestAnimationFrame(checkInRAF)
 		} else if (typeof setImmediate !== 'undefined') {
 			const checkInImmediate = () => {
@@ -358,6 +369,7 @@ export function watchSource<T>(
 				checkValue()
 				setImmediate(checkInImmediate)
 			}
+
 			setImmediate(checkInImmediate)
 		} else if (typeof process !== 'undefined' && typeof process.nextTick === 'function') {
 			const checkInNextTick = () => {
@@ -365,6 +377,7 @@ export function watchSource<T>(
 				checkValue()
 				process.nextTick(checkInNextTick)
 			}
+
 			process.nextTick(checkInNextTick)
 		} else {
 			// Fallback to setInterval
@@ -383,5 +396,6 @@ export function watchSource<T>(
 	if (immediate) {
 		callback(source)
 	}
+
 	return () => {}
 }

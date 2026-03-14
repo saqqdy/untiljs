@@ -1,7 +1,7 @@
-import { waiting } from 'js-cool'
 import type { Falsy, MaybeRefOrGetter, UntilToMatchOptions, WatchSource } from './types'
-import { deepEqual, watchSource } from './utils'
+import { waiting } from 'js-cool'
 import { UntilBase } from './UntilBase'
+import { deepEqual, watchSource } from './utils'
 
 export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 	constructor(r: WatchSource<T>, isNot?: boolean) {
@@ -10,9 +10,9 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 
 	toBe<P extends T = T>(
 		value: MaybeRefOrGetter<P>,
-		options?: UntilToMatchOptions
+		options?: UntilToMatchOptions,
 	): Not extends true ? Promise<T> : Promise<P> {
-		const { deep = false, timeout, throwOnTimeout } = options ?? {}
+		const { deep = false, throwOnTimeout, timeout } = options ?? {}
 
 		// Get the target value - if it's a getter, we need to watch it too
 		const getTargetValue = (): P => {
@@ -22,22 +22,25 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 			if (value !== null && typeof value === 'object' && 'value' in value) {
 				return (value as { value: P }).value
 			}
+
 			return value
 		}
 
 		// Check if target is subscribable (has subscribe method)
-		const isTargetSubscribable =
-			value !== null &&
-			typeof value === 'object' &&
-			typeof (value as { subscribe?: unknown }).subscribe === 'function'
+		const isTargetSubscribable
+			= value !== null
+			  && typeof value === 'object'
+			  && typeof (value as { subscribe?: unknown }).subscribe === 'function'
 
 		if (!isTargetSubscribable) {
 			// Static target value - use simple toMatch
 			const targetValue = getTargetValue()
-			return super.toMatch(v => {
+
+			return super.toMatch((v) => {
 				if (deep) {
 					return deepEqual(v, targetValue, deep)
 				}
+
 				return Object.is(v, targetValue)
 			}, options) as Not extends true ? Promise<T> : Promise<P>
 		}
@@ -45,7 +48,7 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 		// Dynamic target value - watch both source and target
 		let stop: (() => void) | null = null
 
-		const watcher = new Promise<T>(resolve => {
+		const watcher = new Promise<T>((resolve) => {
 			let sourceValue: T | undefined,
 				targetValue: P | undefined,
 				sourceReady = false,
@@ -67,23 +70,23 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 			// Watch source
 			const stopSource = watchSource(
 				this.r,
-				v => {
+				(v) => {
 					sourceValue = v
 					sourceReady = true
 					checkAndResolve()
 				},
-				{ immediate: true, deep }
+				{ deep, immediate: true },
 			)
 
 			// Watch target
 			const stopTarget = watchSource(
 				value as WatchSource<P>,
-				v => {
+				(v) => {
 					targetValue = v
 					targetReady = true
 					checkAndResolve()
 				},
-				{ immediate: true, deep }
+				{ deep, immediate: true },
 			)
 
 			stop = () => {
@@ -93,12 +96,14 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 		})
 
 		const promises = [watcher]
+
 		if (timeout != null) {
 			promises.push(
 				waiting(timeout, throwOnTimeout).then(() => {
 					stop?.()
+
 					return this.getValue()
-				})
+				}),
 			)
 		}
 
@@ -106,7 +111,7 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 	}
 
 	toBeTruthy(options?: UntilToMatchOptions) {
-		return super.toMatch(v => Boolean(v), options) as Not extends true
+		return super.toMatch((v) => Boolean(v), options) as Not extends true
 			? Promise<T & Falsy>
 			: Promise<Exclude<T, Falsy>>
 	}

@@ -34,7 +34,7 @@ Promise-based one-time watch for changes - **Framework Agnostic**
 - **Timeout Support** - Built-in timeout handling with optional error throwing
 - **Tree-shakeable** - Only bundle what you use
 - **Zero Dependencies** - Only `js-cool` as a lightweight runtime dependency
-- **Well Tested** - 210+ test cases with comprehensive coverage
+- **Well Tested** - 227+ test cases with comprehensive coverage
 
 ## Experience Online
 

@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from 'vitest'
-import until from '../src/index'
 import type { Subscribable } from '../src/types'
+import { describe, expect, it } from 'vitest'
+import until from '../src/index'
 
 // Helper to create a simple Subscribable for testing
 function createSubscribable<T>(initialValue: T): {
@@ -11,22 +11,23 @@ function createSubscribable<T>(initialValue: T): {
 	const listeners = new Set<(value: T) => void>()
 
 	const subscribable: Subscribable<T> = {
-		get value() {
-			return value
-		},
 		subscribe(callback: (value: T) => void) {
 			listeners.add(callback)
 			callback(value)
+
 			return () => listeners.delete(callback)
-		}
+		},
+		get value() {
+			return value
+		},
 	}
 
 	const setValue = (newValue: T) => {
 		value = newValue
-		listeners.forEach(cb => cb(value))
+		listeners.forEach((cb) => cb(value))
 	}
 
-	return { subscribable, setValue }
+	return { setValue, subscribable }
 }
 
 // Helper to create a ref-like object (simulates Vue ref)
@@ -41,6 +42,7 @@ describe('toBe', () => {
 	describe('with getter function', () => {
 		it('should resolve immediately when value already matches', async () => {
 			const value = 5
+
 			await expect(until(() => value).toBe(5)).resolves.toBe(5)
 		})
 
@@ -81,7 +83,7 @@ describe('toBe', () => {
 			setTimeout(() => {
 				value = null
 			}, 50)
-			await expect(promise).resolves.toBe(null)
+			await expect(promise).resolves.toBeNull()
 		})
 
 		it('should work with undefined value', async () => {
@@ -91,7 +93,7 @@ describe('toBe', () => {
 			setTimeout(() => {
 				value = undefined
 			}, 50)
-			await expect(promise).resolves.toBe(undefined)
+			await expect(promise).resolves.toBeUndefined()
 		})
 
 		it('should work with 0 as valid value', async () => {
@@ -121,7 +123,7 @@ describe('toBe', () => {
 			setTimeout(() => {
 				value = false
 			}, 50)
-			await expect(promise).resolves.toBe(false)
+			await expect(promise).resolves.toBeFalsy()
 		})
 
 		it('should work with Symbol', async () => {
@@ -150,6 +152,7 @@ describe('toBe', () => {
 	describe('with RefLike (Vue ref-like)', () => {
 		it('should resolve immediately when value already matches', async () => {
 			const ref = createRef(5)
+
 			await expect(until(ref).toBe(5)).resolves.toBe(5)
 		})
 
@@ -190,7 +193,7 @@ describe('toBe', () => {
 			setTimeout(() => {
 				ref.value = null
 			}, 50)
-			await expect(promise).resolves.toBe(null)
+			await expect(promise).resolves.toBeNull()
 		})
 
 		it('should work with getter for target value', async () => {
@@ -208,11 +211,12 @@ describe('toBe', () => {
 	describe('with Subscribable', () => {
 		it('should resolve immediately when value already matches', async () => {
 			const { subscribable } = createSubscribable(5)
+
 			await expect(until(subscribable).toBe(5)).resolves.toBe(5)
 		})
 
 		it('should resolve when value becomes equal', async () => {
-			const { subscribable, setValue } = createSubscribable(0)
+			const { setValue, subscribable } = createSubscribable(0)
 			const promise = until(subscribable).toBe(5)
 
 			setTimeout(() => setValue(5), 50)
@@ -238,7 +242,7 @@ describe('toMatch', () => {
 	describe('with getter function', () => {
 		it('should resolve when condition is met', async () => {
 			let value = 0
-			const promise = until(() => value).toMatch(v => v > 5)
+			const promise = until(() => value).toMatch((v) => v > 5)
 
 			setTimeout(() => {
 				value = 10
@@ -248,19 +252,20 @@ describe('toMatch', () => {
 
 		it('should resolve immediately if condition already met', async () => {
 			const value = 10
-			await expect(until(() => value).toMatch(v => v > 5)).resolves.toBe(10)
+
+			await expect(until(() => value).toMatch((v) => v > 5)).resolves.toBe(10)
 		})
 
 		it('should work with complex conditions', async () => {
-			let value = { status: 'pending', count: 0 }
-			const promise = until(() => value).toMatch(v => v.status === 'ready' && v.count >= 5, {
-				deep: true
+			let value = { count: 0, status: 'pending' }
+			const promise = until(() => value).toMatch((v) => v.status === 'ready' && v.count >= 5, {
+				deep: true,
 			})
 
 			setTimeout(() => {
-				value = { status: 'ready', count: 5 }
+				value = { count: 5, status: 'ready' }
 			}, 50)
-			await expect(promise).resolves.toEqual({ status: 'ready', count: 5 })
+			await expect(promise).resolves.toEqual({ count: 5, status: 'ready' })
 		})
 
 		it('should work with type guard conditions', async () => {
@@ -275,7 +280,7 @@ describe('toMatch', () => {
 
 		it('should work with regex conditions', async () => {
 			let value = 'initial'
-			const promise = until(() => value).toMatch(v => /^ready/.test(v))
+			const promise = until(() => value).toMatch((v) => v.startsWith('ready'))
 
 			setTimeout(() => {
 				value = 'ready-state'
@@ -285,7 +290,7 @@ describe('toMatch', () => {
 
 		it('should work with array conditions', async () => {
 			let value = [1, 2, 3]
-			const promise = until(() => value).toMatch(v => v.length >= 5)
+			const promise = until(() => value).toMatch((v) => v.length >= 5)
 
 			setTimeout(() => {
 				value = [1, 2, 3, 4, 5]
@@ -297,7 +302,7 @@ describe('toMatch', () => {
 	describe('with RefLike', () => {
 		it('should resolve when condition is met', async () => {
 			const ref = createRef(0)
-			const promise = until(ref).toMatch(v => v > 5)
+			const promise = until(ref).toMatch((v) => v > 5)
 
 			setTimeout(() => {
 				ref.value = 10
@@ -307,26 +312,27 @@ describe('toMatch', () => {
 
 		it('should resolve immediately if condition already met', async () => {
 			const ref = createRef(10)
-			await expect(until(ref).toMatch(v => v > 5)).resolves.toBe(10)
+
+			await expect(until(ref).toMatch((v) => v > 5)).resolves.toBe(10)
 		})
 
 		it('should work with object conditions', async () => {
-			const ref = createRef({ name: '', age: 0 })
-			const promise = until(ref).toMatch(v => v.name === 'John' && v.age >= 18, {
-				deep: true
+			const ref = createRef({ age: 0, name: '' })
+			const promise = until(ref).toMatch((v) => v.name === 'John' && v.age >= 18, {
+				deep: true,
 			})
 
 			setTimeout(() => {
-				ref.value = { name: 'John', age: 20 }
+				ref.value = { age: 20, name: 'John' }
 			}, 50)
-			await expect(promise).resolves.toEqual({ name: 'John', age: 20 })
+			await expect(promise).resolves.toEqual({ age: 20, name: 'John' })
 		})
 	})
 
 	describe('with Subscribable', () => {
 		it('should resolve when condition is met', async () => {
-			const { subscribable, setValue } = createSubscribable(0)
-			const promise = until(subscribable).toMatch(v => v > 5)
+			const { setValue, subscribable } = createSubscribable(0)
+			const promise = until(subscribable).toMatch((v) => v > 5)
 
 			setTimeout(() => setValue(10), 50)
 			await expect(promise).resolves.toBe(10)
@@ -387,6 +393,7 @@ describe('toBeTruthy', () => {
 
 	it('should resolve immediately for empty arrays (arrays are always truthy)', async () => {
 		const ref = createRef<number[]>([])
+
 		// Empty arrays are truthy in JavaScript, so this resolves immediately
 		await expect(until(ref).toBeTruthy()).resolves.toEqual([])
 	})
@@ -413,7 +420,7 @@ describe('toBeNull', () => {
 		setTimeout(() => {
 			value = null
 		}, 50)
-		await expect(promise).resolves.toBe(null)
+		await expect(promise).resolves.toBeNull()
 	})
 
 	it('should resolve when value is null - RefLike', async () => {
@@ -423,12 +430,13 @@ describe('toBeNull', () => {
 		setTimeout(() => {
 			ref.value = null
 		}, 50)
-		await expect(promise).resolves.toBe(null)
+		await expect(promise).resolves.toBeNull()
 	})
 
 	it('should resolve immediately if already null', async () => {
 		const ref = createRef<string | null>(null)
-		await expect(until(ref).toBeNull()).resolves.toBe(null)
+
+		await expect(until(ref).toBeNull()).resolves.toBeNull()
 	})
 })
 
@@ -443,7 +451,7 @@ describe('toBeUndefined', () => {
 		setTimeout(() => {
 			value = undefined
 		}, 50)
-		await expect(promise).resolves.toBe(undefined)
+		await expect(promise).resolves.toBeUndefined()
 	})
 
 	it('should resolve when value is undefined - RefLike', async () => {
@@ -453,12 +461,13 @@ describe('toBeUndefined', () => {
 		setTimeout(() => {
 			ref.value = undefined
 		}, 50)
-		await expect(promise).resolves.toBe(undefined)
+		await expect(promise).resolves.toBeUndefined()
 	})
 
 	it('should resolve immediately if already undefined', async () => {
 		const ref = createRef<string | undefined>(undefined)
-		await expect(until(ref).toBeUndefined()).resolves.toBe(undefined)
+
+		await expect(until(ref).toBeUndefined()).resolves.toBeUndefined()
 	})
 })
 
@@ -471,7 +480,7 @@ describe('toBeNaN', () => {
 		const promise = until(() => value).toBeNaN()
 
 		setTimeout(() => {
-			value = NaN
+			value = Number.NaN
 		}, 50)
 		await expect(promise).resolves.toBeNaN()
 	})
@@ -481,13 +490,14 @@ describe('toBeNaN', () => {
 		const promise = until(ref).toBeNaN()
 
 		setTimeout(() => {
-			ref.value = NaN
+			ref.value = Number.NaN
 		}, 50)
 		await expect(promise).resolves.toBeNaN()
 	})
 
 	it('should resolve immediately if already NaN', async () => {
-		const ref = createRef(NaN)
+		const ref = createRef(Number.NaN)
+
 		await expect(until(ref).toBeNaN()).resolves.toBeNaN()
 	})
 })
@@ -500,7 +510,7 @@ describe('changed', () => {
 		let value = 1
 		const promise = until(() => value).changed()
 
-		await new Promise(resolve => setTimeout(resolve, 50))
+		await new Promise((resolve) => setTimeout(resolve, 50))
 		value = 2
 
 		await expect(promise).resolves.toBe(2)
@@ -510,7 +520,7 @@ describe('changed', () => {
 		const ref = createRef(1)
 		const promise = until(ref).changed()
 
-		await new Promise(resolve => setTimeout(resolve, 50))
+		await new Promise((resolve) => setTimeout(resolve, 50))
 		ref.value = 2
 
 		await expect(promise).resolves.toBe(2)
@@ -520,7 +530,7 @@ describe('changed', () => {
 		const value = 1
 		const promise = until(() => value).changed({ timeout: 100 })
 
-		await new Promise(resolve => setTimeout(resolve, 150))
+		await new Promise((resolve) => setTimeout(resolve, 150))
 		await expect(promise).resolves.toBe(1)
 	})
 
@@ -528,7 +538,7 @@ describe('changed', () => {
 		const ref = createRef({ a: 1 })
 		const promise = until(ref).changed({ deep: true })
 
-		await new Promise(resolve => setTimeout(resolve, 50))
+		await new Promise((resolve) => setTimeout(resolve, 50))
 		ref.value = { a: 2 }
 
 		await expect(promise).resolves.toEqual({ a: 2 })
@@ -538,7 +548,7 @@ describe('changed', () => {
 		const ref = createRef<string | null>(null)
 		const promise = until(ref).changed()
 
-		await new Promise(resolve => setTimeout(resolve, 50))
+		await new Promise((resolve) => setTimeout(resolve, 50))
 		ref.value = 'not null'
 
 		await expect(promise).resolves.toBe('not null')
@@ -548,10 +558,10 @@ describe('changed', () => {
 		const ref = createRef<string | null>('value')
 		const promise = until(ref).changed()
 
-		await new Promise(resolve => setTimeout(resolve, 50))
+		await new Promise((resolve) => setTimeout(resolve, 50))
 		ref.value = null
 
-		await expect(promise).resolves.toBe(null)
+		await expect(promise).resolves.toBeNull()
 	})
 })
 
@@ -563,11 +573,11 @@ describe('changedTimes', () => {
 		let value = 0
 		const promise = until(() => value).changedTimes(3)
 
-		await new Promise(resolve => setTimeout(resolve, 20))
+		await new Promise((resolve) => setTimeout(resolve, 20))
 		value = 1
-		await new Promise(resolve => setTimeout(resolve, 20))
+		await new Promise((resolve) => setTimeout(resolve, 20))
 		value = 2
-		await new Promise(resolve => setTimeout(resolve, 20))
+		await new Promise((resolve) => setTimeout(resolve, 20))
 		value = 3
 
 		await expect(promise).resolves.toBe(3)
@@ -577,11 +587,11 @@ describe('changedTimes', () => {
 		const ref = createRef(0)
 		const promise = until(ref).changedTimes(3)
 
-		await new Promise(resolve => setTimeout(resolve, 20))
+		await new Promise((resolve) => setTimeout(resolve, 20))
 		ref.value = 1
-		await new Promise(resolve => setTimeout(resolve, 20))
+		await new Promise((resolve) => setTimeout(resolve, 20))
 		ref.value = 2
-		await new Promise(resolve => setTimeout(resolve, 20))
+		await new Promise((resolve) => setTimeout(resolve, 20))
 		ref.value = 3
 
 		await expect(promise).resolves.toBe(3)
@@ -591,11 +601,11 @@ describe('changedTimes', () => {
 		const ref = createRef(0)
 		const promise = until(ref).changedTimes(2)
 
-		await new Promise(resolve => setTimeout(resolve, 30))
+		await new Promise((resolve) => setTimeout(resolve, 30))
 		ref.value = 1
-		await new Promise(resolve => setTimeout(resolve, 100))
+		await new Promise((resolve) => setTimeout(resolve, 100))
 		ref.value = 1 // Same value, shouldn't count
-		await new Promise(resolve => setTimeout(resolve, 30))
+		await new Promise((resolve) => setTimeout(resolve, 30))
 		ref.value = 2 // This is the second actual change
 
 		await expect(promise).resolves.toBe(2)
@@ -638,7 +648,7 @@ describe('not modifier', () => {
 	describe('not.toMatch', () => {
 		it('should invert toMatch', async () => {
 			let value = 10
-			const promise = until(() => value).not.toMatch(v => v > 5)
+			const promise = until(() => value).not.toMatch((v) => v > 5)
 
 			setTimeout(() => {
 				value = 3
@@ -648,7 +658,7 @@ describe('not modifier', () => {
 
 		it('should work with RefLike', async () => {
 			const ref = createRef(10)
-			const promise = until(ref).not.toMatch(v => v > 5)
+			const promise = until(ref).not.toMatch((v) => v > 5)
 
 			setTimeout(() => {
 				ref.value = 3
@@ -685,7 +695,7 @@ describe('not modifier', () => {
 			setTimeout(() => {
 				ref.value = null
 			}, 50)
-			await expect(promise).resolves.toBe(null)
+			await expect(promise).resolves.toBeNull()
 		})
 	})
 
@@ -725,7 +735,7 @@ describe('not modifier', () => {
 
 	describe('not.toBeNaN', () => {
 		it('should invert toBeNaN', async () => {
-			let value: number = NaN
+			let value: number = Number.NaN
 			const promise = until(() => value).not.toBeNaN()
 
 			setTimeout(() => {
@@ -757,13 +767,15 @@ describe('timeout options', () => {
 
 		await promise
 		const elapsed = Date.now() - start
+
 		expect(elapsed).toBeGreaterThanOrEqual(90)
 		expect(elapsed).toBeLessThan(200)
 	})
 
 	it('should return value on timeout when throwOnTimeout is false', async () => {
 		const value = 0
-		const promise = until(() => value).toBe(5, { timeout: 50, throwOnTimeout: false })
+		const promise = until(() => value).toBe(5, { throwOnTimeout: false, timeout: 50 })
+
 		await expect(promise).resolves.toBe(0)
 	})
 
@@ -778,6 +790,7 @@ describe('timeout options', () => {
 
 		await promise
 		const elapsed = Date.now() - start
+
 		expect(elapsed).toBeLessThan(200)
 	})
 
@@ -790,11 +803,12 @@ describe('timeout options', () => {
 
 	it('should timeout with throwOnTimeout true', async () => {
 		const value = 0
-		const promise = until(() => value).toBe(5, { timeout: 50, throwOnTimeout: true })
+		const promise = until(() => value).toBe(5, { throwOnTimeout: true, timeout: 50 })
 
 		// js-cool's waiting function rejects on timeout with throwOnTimeout
 		// The promise should reject when timeout occurs with throwOnTimeout
 		let thrown = false
+
 		try {
 			await promise
 		} catch {
@@ -802,7 +816,7 @@ describe('timeout options', () => {
 		}
 		// Either it throws or returns current value, both are acceptable behaviors
 		// depending on js-cool implementation
-		expect(thrown || true).toBe(true)
+		expect(thrown || true).toBeTruthy()
 	})
 })
 
@@ -822,7 +836,7 @@ describe('deep comparison option', () => {
 
 	it('should use deep comparison in toMatch', async () => {
 		const value = { items: [1, 2, 3] }
-		const promise = until(() => value).toMatch(v => v.items.length === 3, { deep: true })
+		const promise = until(() => value).toMatch((v) => v.items.length === 3, { deep: true })
 
 		await expect(promise).resolves.toEqual({ items: [1, 2, 3] })
 	})
@@ -842,20 +856,20 @@ describe('deep comparison option', () => {
 		const promise = until(ref).toBe(
 			[
 				[1, 2],
-				[3, 4]
+				[3, 4],
 			],
-			{ deep: true }
+			{ deep: true },
 		)
 
 		setTimeout(() => {
 			ref.value = [
 				[1, 2],
-				[3, 4]
+				[3, 4],
 			]
 		}, 50)
 		await expect(promise).resolves.toEqual([
 			[1, 2],
-			[3, 4]
+			[3, 4],
 		])
 	})
 
@@ -876,7 +890,7 @@ describe('deep comparison option', () => {
 // ============================================
 describe('Subscribable support', () => {
 	it('should work with Subscribable objects', async () => {
-		const { subscribable, setValue } = createSubscribable(1)
+		const { setValue, subscribable } = createSubscribable(1)
 		const promise = until(subscribable).toBe(5)
 
 		setTimeout(() => setValue(5), 50)
@@ -884,15 +898,15 @@ describe('Subscribable support', () => {
 	})
 
 	it('should work with Subscribable and toMatch', async () => {
-		const { subscribable, setValue } = createSubscribable(0)
-		const promise = until(subscribable).toMatch(v => v > 5)
+		const { setValue, subscribable } = createSubscribable(0)
+		const promise = until(subscribable).toMatch((v) => v > 5)
 
 		setTimeout(() => setValue(10), 50)
 		await expect(promise).resolves.toBe(10)
 	})
 
 	it('should work with Subscribable and changed', async () => {
-		const { subscribable, setValue } = createSubscribable(1)
+		const { setValue, subscribable } = createSubscribable(1)
 		const promise = until(subscribable).changed({ timeout: 200 })
 
 		setTimeout(() => setValue(2), 50)
@@ -900,7 +914,7 @@ describe('Subscribable support', () => {
 	})
 
 	it('should work with Subscribable and toBeTruthy', async () => {
-		const { subscribable, setValue } = createSubscribable<string | null>(null)
+		const { setValue, subscribable } = createSubscribable<string | null>(null)
 		const promise = until(subscribable).toBeTruthy()
 
 		setTimeout(() => setValue('hello'), 50)
@@ -932,6 +946,7 @@ describe('array support', () => {
 
 		it('should resolve immediately if value already in array', async () => {
 			const arr = [1, 2, 3]
+
 			await expect(until(() => arr).toContains(2)).resolves.toEqual([1, 2, 3])
 		})
 
@@ -1020,7 +1035,7 @@ describe('edge cases', () => {
 		setTimeout(() => {
 			value = false
 		}, 50)
-		await expect(promise).resolves.toBe(false)
+		await expect(promise).resolves.toBeFalsy()
 	})
 
 	it('should handle complex nested objects', async () => {
@@ -1028,10 +1043,10 @@ describe('edge cases', () => {
 			user: {
 				profile: {
 					address: {
-						city: 'NYC'
-					}
-				}
-			}
+						city: 'NYC',
+					},
+				},
+			},
 		})
 
 		const promise = until(ref).toBe(
@@ -1039,12 +1054,12 @@ describe('edge cases', () => {
 				user: {
 					profile: {
 						address: {
-							city: 'LA'
-						}
-					}
-				}
+							city: 'LA',
+						},
+					},
+				},
 			},
-			{ deep: true }
+			{ deep: true },
 		)
 
 		setTimeout(() => {
@@ -1052,10 +1067,10 @@ describe('edge cases', () => {
 				user: {
 					profile: {
 						address: {
-							city: 'LA'
-						}
-					}
-				}
+							city: 'LA',
+						},
+					},
+				},
 			}
 		}, 50)
 
@@ -1063,10 +1078,10 @@ describe('edge cases', () => {
 			user: {
 				profile: {
 					address: {
-						city: 'LA'
-					}
-				}
-			}
+						city: 'LA',
+					},
+				},
+			},
 		})
 	})
 
@@ -1086,6 +1101,7 @@ describe('edge cases', () => {
 		}, 50)
 
 		const results = await Promise.all([promise1, promise2, promise3])
+
 		expect(results).toEqual([1, 2, 3])
 	})
 
@@ -1105,7 +1121,7 @@ describe('edge cases', () => {
 
 	it('should handle getter that returns different object references', async () => {
 		let obj = { value: 1 }
-		const promise = until(() => obj).toMatch(v => v.value === 2, { deep: true })
+		const promise = until(() => obj).toMatch((v) => v.value === 2, { deep: true })
 
 		setTimeout(() => {
 			obj = { value: 2 }

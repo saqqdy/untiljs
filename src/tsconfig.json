@@ -3,8 +3,8 @@
 	"compilerOptions": {
 		"target": "ES5",
 		"declaration": true,
-		"sourceMap": true,
 		"emitDeclarationOnly": true,
-		"outDir": "../temp"
+		"outDir": "../temp",
+		"sourceMap": true
 	}
 }

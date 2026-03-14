@@ -5,15 +5,15 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
 	plugins: [vue()],
 	server: {
+		cors: true,
+		fs: { allow: ['..'] },
+		host: true,
+		port: 8888,
 		proxy: {
 			'/app/': {
-				target: 'http://rap2api.taobao.org',
-				changeOrigin: true
+				changeOrigin: true,
+				target: 'http://rap2api.taobao.org'
 			}
-		},
-		fs: { allow: ['..'] },
-		cors: true,
-		host: true,
-		port: 8888
+		}
 	}
 })

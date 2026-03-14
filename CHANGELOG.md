@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2025-03-14
+
+### Changed
+
+- **Upgraded ESLint**: Migrated to `@eslint-sets/eslint-config@6.0.0-beta.5` with ESLint 9 support
+- **Upgraded Vitest**: Updated to Vitest 4.1.0 with latest `@vitest/coverage-v8`
+- **Upgraded esbuild**: Added esbuild 0.27.4 for better build performance
+
+### Removed
+
+- **Removed Prettier**: No longer needed, formatting is handled by ESLint
+- **Removed Jest**: Fully migrated to Vitest for testing
+- **Removed `jest.config.js`**: Jest configuration file deleted
+
+### Fixed
+
+- Fixed build script to use `rollup-plugin-esbuild` for config processing
+- Fixed import syntax in `build/config.ts` to use `readFileSync` instead of import attributes
+
+---
+
 ## [2.1.0] - 2025-03-14
 
 ### Added
@@ -42,7 +63,7 @@ All notable changes to this project will be documented in this file.
   - RefLike objects: `{ value }` (Vue refs, custom reactive objects)
   - Plain values: static values
 - **Deep Equality for Date and RegExp**: Added special handling for Date (compares by time value) and RegExp (compares by source and flags) objects.
-- **Comprehensive Test Suite**: Added 210+ test cases with Vitest, covering all methods and edge cases.
+- **Comprehensive Test Suite**: Added 227+ test cases with Vitest, covering all methods and edge cases.
 - **Node.js Examples**: Added `examples/nodejs/node-example.js` demonstrating usage in Node.js environment.
 - **Vanilla HTML Example**: Added `examples/vanilla/index.html` for CDN usage demonstration.
 

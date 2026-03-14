@@ -10,14 +10,14 @@ import { visualizer } from 'rollup-plugin-visualizer'
 import { banner, extensions, reporter } from './config'
 
 export interface Config {
-	input: string
+	browser?: boolean
+	env: 'development' | 'production'
 	file: string
 	format: InternalModuleFormat
-	browser?: boolean
+	input: string
 	minify?: boolean
-	transpile?: boolean
-	env: 'development' | 'production'
 	plugins?: Plugin[]
+	transpile?: boolean
 }
 
 export interface Output extends OutputOptions {
@@ -26,55 +26,55 @@ export interface Output extends OutputOptions {
 
 export interface Options extends RollupOptions {
 	external: string[]
-	plugins: Plugin[]
 	output: Output
+	plugins: Plugin[]
 }
 
 const IS_WATCH = process.env.ROLLUP_WATCH
 
 const configs: Config[] = IS_WATCH
 	? [
-			{
-				input: 'src/index.ts',
-				file: 'dist/index.mjs',
-				format: 'es',
-				browser: true,
-				env: 'development'
-			},
-			{
-				input: 'src/index.ts',
-				file: 'dist/index.cjs',
-				format: 'cjs',
-				env: 'development'
-			}
-		]
+		{
+			browser: true,
+			env: 'development',
+			file: 'dist/index.mjs',
+			format: 'es',
+			input: 'src/index.ts',
+		},
+		{
+			env: 'development',
+			file: 'dist/index.cjs',
+			format: 'cjs',
+			input: 'src/index.ts',
+		},
+	]
 	: [
-			{
-				input: 'src/index.ts',
-				file: 'dist/index.mjs',
-				format: 'es',
-				env: 'development'
-			},
-			{
-				input: 'src/index.ts',
-				file: 'dist/index.iife.js',
-				format: 'iife',
-				env: 'development'
-			},
-			{
-				input: 'src/index.ts',
-				file: 'dist/index.iife.min.js',
-				format: 'iife',
-				minify: true,
-				env: 'production'
-			},
-			{
-				input: 'src/index.ts',
-				file: 'dist/index.cjs',
-				format: 'cjs',
-				env: 'development'
-			}
-		]
+		{
+			env: 'development',
+			file: 'dist/index.mjs',
+			format: 'es',
+			input: 'src/index.ts',
+		},
+		{
+			env: 'development',
+			file: 'dist/index.iife.js',
+			format: 'iife',
+			input: 'src/index.ts',
+		},
+		{
+			env: 'production',
+			file: 'dist/index.iife.min.js',
+			format: 'iife',
+			input: 'src/index.ts',
+			minify: true,
+		},
+		{
+			env: 'development',
+			file: 'dist/index.cjs',
+			format: 'cjs',
+			input: 'src/index.ts',
+		},
+	]
 
 function createEntries() {
 	return configs.map(createEntry)
@@ -83,28 +83,28 @@ function createEntries() {
 function createEntry(config: Config) {
 	const isGlobalBuild = config.format === 'iife'
 	const isTypeScript = config.input.endsWith('.ts')
-	const isTranspiled =
-		config.input.endsWith('bundler.js') ||
-		config.input.endsWith('browser.js') ||
-		config.input.endsWith('prod.js')
+	const isTranspiled
+		= config.input.endsWith('bundler.js')
+		  || config.input.endsWith('browser.js')
+		  || config.input.endsWith('prod.js')
 
 	const _config: Options = {
 		external: [],
 		input: config.input,
-		plugins: [],
-		output: {
-			file: config.file,
-			format: config.format,
-			exports: 'auto',
-			// extend: true,
-			plugins: [],
-			globals: {}
-		},
 		onwarn: (msg: any, warn) => {
 			if (!/Circular/.test(msg)) {
 				warn(msg)
 			}
-		}
+		},
+		output: {
+			exports: 'auto',
+			file: config.file,
+			format: config.format,
+			globals: {},
+			// extend: true,
+			plugins: [],
+		},
+		plugins: [],
 	}
 
 	if (isGlobalBuild || config.browser) _config.output.banner = banner
@@ -120,22 +120,24 @@ function createEntry(config: Config) {
 	_config.plugins.push(nodeResolve(), commonjs(), json())
 
 	if (config.transpile !== false) {
-		!isTranspiled &&
+		if (!isTranspiled) {
 			_config.plugins.push(
 				babel({
 					babelHelpers: 'bundled',
+					exclude: [/node_modules[\\/]core-js/],
 					extensions,
-					exclude: [/node_modules[\\/]core-js/]
-				})
+				}),
 			)
-		isTypeScript &&
+		}
+		if (isTypeScript) {
 			_config.plugins.push(
 				typescript({
 					compilerOptions: {
-						declaration: false
-					}
-				})
+						declaration: false,
+					},
+				}),
 			)
+		}
 	}
 
 	if (config.minify) {

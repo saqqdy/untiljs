@@ -1,6 +1,6 @@
 import type { ElementOf, MaybeRefOrGetter, UntilToMatchOptions, WatchSource } from './types'
-import { deepEqual } from './utils'
 import { UntilValue } from './UntilValue'
+import { deepEqual } from './utils'
 
 /**
  * Get value from MaybeRefOrGetter
@@ -12,6 +12,7 @@ function getValue<T>(r: MaybeRefOrGetter<T>): T {
 	if (r !== null && typeof r === 'object' && 'value' in r) {
 		return (r as { value: T }).value
 	}
+
 	return r
 }
 
@@ -28,12 +29,12 @@ export class UntilArray<T extends unknown[], Not extends boolean = false> extend
 	}
 
 	toContains(value: MaybeRefOrGetter<ElementOf<T>>, options?: UntilToMatchOptions) {
-		return super.toMatch(v => {
+		return super.toMatch((v) => {
 			const array = Array.from(v as unknown[])
 			const targetValue = getValue(value)
 
 			// Use deep equality for object comparison
-			return array.some(item => deepEqual(item, targetValue, options?.deep ?? true))
+			return array.some((item) => deepEqual(item, targetValue, options?.deep ?? true))
 		}, options)
 	}
 }

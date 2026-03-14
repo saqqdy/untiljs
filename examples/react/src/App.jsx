@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import until, { createStore } from 'untiljs'
 import './App.css'
 
@@ -21,17 +21,17 @@ function useUntil(initialValue) {
 	})
 
 	// Sync ref with state changes
-	const setValueAndRef = useCallback(newValue => {
+	const setValueAndRef = useCallback((newValue) => {
 		ref.current = newValue
 		setValue(newValue)
 	}, [])
 
 	return {
-		value,
-		setValue: setValueAndRef,
 		ref: refLike.current,
+		setValue: setValueAndRef,
 		// For direct until usage
-		until: () => until(refLike.current)
+		until: () => until(refLike.current),
+		value
 	}
 }
 
@@ -53,12 +53,16 @@ function createReactiveRef(initialValue) {
 // ============================================
 // Example Card Component
 // ============================================
-function ExampleCard({ title, children, onClick, buttonText = 'Test' }) {
+function ExampleCard({ buttonText = 'Test', children, onClick, title }) {
 	return (
 		<div className="example-card">
-			<h3>{title}</h3>
+			<h3>
+				{title}
+			</h3>
 			{children}
-			<button onClick={onClick}>{buttonText}</button>
+			<button onClick={onClick}>
+				{buttonText}
+			</button>
 		</div>
 	)
 }
@@ -85,7 +89,7 @@ function BasicExamples() {
 		setToMatchResult('waiting...')
 		toMatch.setValue(0)
 		setTimeout(() => toMatch.setValue(10), 1000)
-		await toMatch.until().toMatch(v => v > 5)
+		await toMatch.until().toMatch((v) => v > 5)
 		setToMatchResult(`Success! Value ${toMatch.value} is greater than 5`)
 	}
 
@@ -95,7 +99,7 @@ function BasicExamples() {
 	const testTruthy = async () => {
 		setTruthyResult('waiting...')
 		truthy.setValue(null)
-		setTimeout(() => truthy.setValue({ name: 'John', age: 30 }), 1000)
+		setTimeout(() => truthy.setValue({ age: 30, name: 'John' }), 1000)
 		await truthy.until().toBeTruthy()
 		setTruthyResult(`Success! Got object: ${JSON.stringify(truthy.value)}`)
 	}
@@ -128,7 +132,7 @@ function BasicExamples() {
 	const testBeNaN = async () => {
 		setNaNResult('waiting...')
 		nanVal.setValue(0)
-		setTimeout(() => nanVal.setValue(NaN), 1000)
+		setTimeout(() => nanVal.setValue(Number.NaN), 1000)
 		await nanVal.until().toBeNaN()
 		setNaNResult('Success! Value is now NaN')
 	}
@@ -138,33 +142,69 @@ function BasicExamples() {
 			<h2>Basic Usage</h2>
 			<div className="examples-grid">
 				<ExampleCard title="toBe" onClick={testToBe}>
-					<p>Value: {toBe.value}</p>
-					<p>Result: {toBeResult}</p>
+					<p>
+						Value:
+						{toBe.value}
+					</p>
+					<p>
+						Result:
+						{toBeResult}
+					</p>
 				</ExampleCard>
 
 				<ExampleCard title="toMatch" onClick={testToMatch}>
-					<p>Value: {toMatch.value}</p>
-					<p>Result: {toMatchResult}</p>
+					<p>
+						Value:
+						{toMatch.value}
+					</p>
+					<p>
+						Result:
+						{toMatchResult}
+					</p>
 				</ExampleCard>
 
 				<ExampleCard title="toBeTruthy" onClick={testTruthy}>
-					<p>Value: {JSON.stringify(truthy.value)}</p>
-					<p>Result: {truthyResult}</p>
+					<p>
+						Value:
+						{JSON.stringify(truthy.value)}
+					</p>
+					<p>
+						Result:
+						{truthyResult}
+					</p>
 				</ExampleCard>
 
 				<ExampleCard title="toBeNull" onClick={testBeNull}>
-					<p>Value: {JSON.stringify(nullVal.value)}</p>
-					<p>Result: {nullResult}</p>
+					<p>
+						Value:
+						{JSON.stringify(nullVal.value)}
+					</p>
+					<p>
+						Result:
+						{nullResult}
+					</p>
 				</ExampleCard>
 
 				<ExampleCard title="toBeUndefined" onClick={testBeUndefined}>
-					<p>Value: {JSON.stringify(undefinedVal.value)}</p>
-					<p>Result: {undefinedResult}</p>
+					<p>
+						Value:
+						{JSON.stringify(undefinedVal.value)}
+					</p>
+					<p>
+						Result:
+						{undefinedResult}
+					</p>
 				</ExampleCard>
 
 				<ExampleCard title="toBeNaN" onClick={testBeNaN}>
-					<p>Value: {Number.isNaN(nanVal.value) ? 'NaN' : nanVal.value}</p>
-					<p>Result: {nanResult}</p>
+					<p>
+						Value:
+						{Number.isNaN(nanVal.value) ? 'NaN' : nanVal.value}
+					</p>
+					<p>
+						Result:
+						{nanResult}
+					</p>
 				</ExampleCard>
 			</div>
 		</section>
@@ -212,14 +252,30 @@ function ChangeDetectionExamples() {
 			<h2>Change Detection</h2>
 			<div className="examples-grid">
 				<ExampleCard title="changed" onClick={testChanged}>
-					<p>Value: "{changed.value}"</p>
-					<p>Result: {changedResult}</p>
+					<p>
+						Value: "
+						{changed.value}
+						"
+					</p>
+					<p>
+						Result:
+						{changedResult}
+					</p>
 				</ExampleCard>
 
 				<ExampleCard title="changedTimes(3)" onClick={testChangedTimes}>
-					<p>Value: {changedTimes.value}</p>
-					<p>Changes: {changedTimesCount}</p>
-					<p>Result: {changedTimesResult}</p>
+					<p>
+						Value:
+						{changedTimes.value}
+					</p>
+					<p>
+						Changes:
+						{changedTimesCount}
+					</p>
+					<p>
+						Result:
+						{changedTimesResult}
+					</p>
 				</ExampleCard>
 			</div>
 		</section>
@@ -257,13 +313,26 @@ function NotModifierExamples() {
 			<h2>Not Modifier</h2>
 			<div className="examples-grid">
 				<ExampleCard title="not.toBe" onClick={testNotToBe}>
-					<p>Value: {notToBe.value}</p>
-					<p>Result: {notToBeResult}</p>
+					<p>
+						Value:
+						{notToBe.value}
+					</p>
+					<p>
+						Result:
+						{notToBeResult}
+					</p>
 				</ExampleCard>
 
 				<ExampleCard title="not.toBeNull" onClick={testNotNull}>
-					<p>Value: "{notNull.value}"</p>
-					<p>Result: {notNullResult}</p>
+					<p>
+						Value: "
+						{notNull.value}
+						"
+					</p>
+					<p>
+						Result:
+						{notNullResult}
+					</p>
 				</ExampleCard>
 			</div>
 		</section>
@@ -282,7 +351,7 @@ function TimeoutExamples() {
 		timeout.setValue(0)
 
 		try {
-			await timeout.until().toBe(5, { timeout: 500, throwOnTimeout: true })
+			await timeout.until().toBe(5, { throwOnTimeout: true, timeout: 500 })
 			setTimeoutResult('Unexpected success')
 		} catch (error) {
 			setTimeoutResult(`Timeout occurred as expected! Error: ${error.message || error}`)
@@ -297,6 +366,7 @@ function TimeoutExamples() {
 		timeoutNoThrow.setValue(0)
 
 		const result = await timeoutNoThrow.until().toBe(5, { timeout: 500 })
+
 		setTimeoutNoThrowResult(`Timeout without throw - returned current value: ${result}`)
 	}
 
@@ -309,8 +379,14 @@ function TimeoutExamples() {
 					onClick={testTimeout}
 					buttonText="Test Timeout (throws)"
 				>
-					<p>Value: {timeout.value}</p>
-					<p>Result: {timeoutResult}</p>
+					<p>
+						Value:
+						{timeout.value}
+					</p>
+					<p>
+						Result:
+						{timeoutResult}
+					</p>
 				</ExampleCard>
 
 				<ExampleCard
@@ -318,8 +394,14 @@ function TimeoutExamples() {
 					onClick={testTimeoutNoThrow}
 					buttonText="Test Timeout (no throw)"
 				>
-					<p>Value: {timeoutNoThrow.value}</p>
-					<p>Result: {timeoutNoThrowResult}</p>
+					<p>
+						Value:
+						{timeoutNoThrow.value}
+					</p>
+					<p>
+						Result:
+						{timeoutNoThrowResult}
+					</p>
 				</ExampleCard>
 			</div>
 		</section>
@@ -341,7 +423,7 @@ function DeepComparisonExamples() {
 			deepObject.setValue({ user: { profile: { name: 'Bob' } } })
 		}, 1000)
 
-		await deepObject.until().toMatch(v => v.user.profile.name === 'Bob', { deep: true })
+		await deepObject.until().toMatch((v) => v.user.profile.name === 'Bob', { deep: true })
 		setDeepObjectResult(`Success! Deep object changed: ${JSON.stringify(deepObject.value)}`)
 	}
 
@@ -367,15 +449,26 @@ function DeepComparisonExamples() {
 			<h2>Deep Comparison</h2>
 			<div className="examples-grid">
 				<ExampleCard title="Deep Object Comparison" onClick={testDeepObject}>
-					<p>Object: {JSON.stringify(deepObject.value)}</p>
-					<p>Result: {deepObjectResult}</p>
+					<p>
+						Object:
+						{JSON.stringify(deepObject.value)}
+					</p>
+					<p>
+						Result:
+						{deepObjectResult}
+					</p>
 				</ExampleCard>
 
 				<ExampleCard title="Deep Array Comparison" onClick={testDeepArray}>
 					<p>
-						Array: [{Array.isArray(deepArray.value) ? deepArray.value.join(', ') : ''}]
+						Array: [
+						{Array.isArray(deepArray.value) ? deepArray.value.join(', ') : ''}
+						]
 					</p>
-					<p>Result: {deepArrayResult}</p>
+					<p>
+						Result:
+						{deepArrayResult}
+					</p>
 				</ExampleCard>
 			</div>
 		</section>
@@ -406,8 +499,15 @@ function ArrayMethodsExamples() {
 			<h2>Array Methods</h2>
 			<div className="examples-grid">
 				<ExampleCard title="toContains" onClick={testArrayContains}>
-					<p>Array: [{Array.isArray(arrayVal.value) ? arrayVal.value.join(', ') : ''}]</p>
-					<p>Result: {arrayResult}</p>
+					<p>
+						Array: [
+						{Array.isArray(arrayVal.value) ? arrayVal.value.join(', ') : ''}
+						]
+					</p>
+					<p>
+						Result:
+						{arrayResult}
+					</p>
 				</ExampleCard>
 			</div>
 		</section>
@@ -420,6 +520,7 @@ function ArrayMethodsExamples() {
 function CreateStoreExamples() {
 	// Create a store that persists across renders using built-in createStore
 	const storeRef = useRef(null)
+
 	if (!storeRef.current) {
 		storeRef.current = createStore(0)
 	}
@@ -429,7 +530,7 @@ function CreateStoreExamples() {
 	const [storeResult, setStoreResult] = useState('waiting...')
 
 	useEffect(() => {
-		return store.subscribe(value => setStoreValue(value))
+		return store.subscribe((value) => setStoreValue(value))
 	}, [store])
 
 	const testCreateStore = async () => {
@@ -448,13 +549,23 @@ function CreateStoreExamples() {
 		<section className="examples-section">
 			<h2>createStore (Built-in)</h2>
 			<p className="description">
-				<strong>Recommended for React!</strong> Use the built-in <code>createStore</code>{' '}
+				<strong>Recommended for React!</strong>
+				{' '}
+				Use the built-in
+				<code>createStore</code>
+				{' '}
 				function for clean React integration.
 			</p>
 			<div className="examples-grid">
 				<ExampleCard title="createStore" onClick={testCreateStore}>
-					<p>Value: {storeValue}</p>
-					<p>Result: {storeResult}</p>
+					<p>
+						Value:
+						{storeValue}
+					</p>
+					<p>
+						Result:
+						{storeResult}
+					</p>
 				</ExampleCard>
 			</div>
 		</section>
@@ -485,7 +596,8 @@ function AsyncDataExample() {
 
 		// Simulate API call
 		setTimeout(() => {
-			const newData = { users: ['Alice', 'Bob', 'Charlie'], count: 3 }
+			const newData = { count: 3, users: ['Alice', 'Bob', 'Charlie'] }
+
 			dataRef.current.value = newData
 			setData(newData)
 			setLoading(false)
@@ -505,9 +617,18 @@ function AsyncDataExample() {
 					onClick={simulateDataLoad}
 					buttonText="Load Data"
 				>
-					<p>Loading: {loading.toString()}</p>
-					<p>Loaded: {loaded.toString()}</p>
-					<p>Data: {data ? JSON.stringify(data) : 'null'}</p>
+					<p>
+						Loading:
+						{loading.toString()}
+					</p>
+					<p>
+						Loaded:
+						{loaded.toString()}
+					</p>
+					<p>
+						Data:
+						{data ? JSON.stringify(data) : 'null'}
+					</p>
 				</ExampleCard>
 			</div>
 		</section>
@@ -543,7 +664,7 @@ function RaceConditionExample() {
 		// First to complete wins
 		const result = await Promise.race([
 			until(refLike).toBe(5, { timeout: 3000 }),
-			new Promise(resolve => setTimeout(() => resolve('timeout-first'), 2000))
+			new Promise((resolve) => setTimeout(() => resolve('timeout-first'), 2000))
 		])
 
 		setRaceResult(
@@ -556,8 +677,14 @@ function RaceConditionExample() {
 			<h2>Race Condition</h2>
 			<div className="examples-grid">
 				<ExampleCard title="Promise.race" onClick={testRace}>
-					<p>Value: {raceValue}</p>
-					<p>Result: {raceResult}</p>
+					<p>
+						Value:
+						{raceValue}
+					</p>
+					<p>
+						Result:
+						{raceResult}
+					</p>
 				</ExampleCard>
 			</div>
 		</section>
@@ -572,8 +699,16 @@ function App() {
 		<div className="container">
 			<h1>untiljs React Examples</h1>
 			<p className="description">
-				<strong>Framework Agnostic!</strong> In React, use <code>createStore</code>{' '}
-				(recommended) or <code>useUntil</code> hook for proper reactivity.
+				<strong>Framework Agnostic!</strong>
+				{' '}
+				In React, use
+				<code>createStore</code>
+				{' '}
+				(recommended) or
+				{' '}
+				<code>useUntil</code>
+				{' '}
+				hook for proper reactivity.
 			</p>
 
 			<CreateStoreExamples />
