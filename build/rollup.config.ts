@@ -114,7 +114,7 @@ function createEntry(config: Config) {
 	}
 
 	if (!isGlobalBuild) {
-		_config.external.push('@vue/reactivity', 'core-js', 'js-cool', 'tslib')
+		_config.external.push('@vue/reactivity', 'js-cool', 'tslib')
 	}
 
 	_config.plugins.push(nodeResolve(), commonjs(), json())

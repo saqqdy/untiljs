@@ -513,7 +513,7 @@ describe('deepEqual', () => {
 
 		it('should return false for primitive vs object', () => {
 			expect(deepEqual(1, { value: 1 })).toBeFalsy()
-			expect(deepEqual('test', Object('test'))).toBeFalsy()
+			expect(deepEqual('test', new Object('test'))).toBeFalsy()
 		})
 	})
 

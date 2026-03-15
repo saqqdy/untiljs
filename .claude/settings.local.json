@@ -12,7 +12,9 @@
       "Bash(ls:*)",
       "Bash(node:*)",
       "Bash(cd:*)",
-      "Bash(pnpm start:*)"
+      "Bash(pnpm start:*)",
+      "Bash(pnpm view:*)",
+      "Bash(pnpm remove:*)"
     ]
   }
 }

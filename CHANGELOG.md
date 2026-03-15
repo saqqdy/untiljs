@@ -17,6 +17,11 @@ All notable changes to this project will be documented in this file.
 - Fixed Angular example TypeScript type annotations for callback parameters
 - Fixed package.json exports to include `types` field for proper TypeScript module resolution
 
+### Removed
+
+- **Removed core-js**: Not used in the project
+- **Removed ts-morph**: Not used in the project
+
 ---
 
 ## [2.1.1] - 2025-03-14
