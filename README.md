@@ -43,6 +43,8 @@ Promise-based one-time watch for changes - **Framework Agnostic**
 - [React Example (CodeSandbox)](https://codesandbox.io/p/sandbox/github/saqqdy/untiljs/tree/master/examples/react)
 - [Angular Example (CodeSandbox)](https://codesandbox.io/p/sandbox/github/saqqdy/untiljs/tree/master/examples/angular)
 - [Svelte Example (CodeSandbox)](https://codesandbox.io/p/sandbox/github/saqqdy/untiljs/tree/master/examples/svelte)
+- [Node.js Example](./examples/nodejs)
+- [Vanilla JS Example](./examples/vanilla)
 
 ## Installation
 

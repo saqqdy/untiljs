@@ -2,13 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.1.1] - 2025-03-14
+## [2.1.2] - 2025-03-15
 
 ### Added
 
-- **Angular Example**: New example demonstrating usage with Angular 19+ and signals (built with Vite via `@analogjs/vite-plugin-angular`)
+- **Angular Example**: New example demonstrating usage with Angular 19+ and signals (standard Angular CLI)
 - **Svelte Example**: New example demonstrating usage with Svelte 5 runes (`$state`, `$effect`)
 - **Vue 2 Example**: New example demonstrating usage with Vue 2.7 Composition API (includes note for Vue 2.6 and below requiring `@vue/composition-api`)
+- **Example Documentation**: Added README.md and .gitignore for all example projects (angular, nodejs, react, svelte, vanilla, vue2, vue3)
+
+### Fixed
+
+- Fixed Angular example configuration (added missing development build configuration)
+- Fixed Angular example TypeScript type annotations for callback parameters
+- Fixed package.json exports to include `types` field for proper TypeScript module resolution
+
+---
+
+## [2.1.1] - 2025-03-14
 
 ### Changed
 
