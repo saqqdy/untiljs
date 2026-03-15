@@ -8,7 +8,11 @@
       "Bash(pnpm add:*)",
       "Bash(pnpm lint:*)",
       "Bash(pnpm build:*)",
-      "Bash(pnpm info:*)"
+      "Bash(pnpm info:*)",
+      "Bash(ls:*)",
+      "Bash(node:*)",
+      "Bash(cd:*)",
+      "Bash(pnpm start:*)"
     ]
   }
 }
