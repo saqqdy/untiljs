@@ -71,11 +71,11 @@ export class UntilBase<T, Not extends boolean = false> {
 		return this.r
 	}
 
-	changed(options?: UntilToMatchOptions) {
+	changed(options?: UntilToMatchOptions): Promise<T> {
 		return this.changedTimes(1, options)
 	}
 
-	changedTimes(n: number = 1, options?: UntilToMatchOptions) {
+	changedTimes(n: number = 1, options?: UntilToMatchOptions): Promise<T> {
 		let count = 0,
 			previousValue: T | undefined,
 			isFirst = true
@@ -99,7 +99,7 @@ export class UntilBase<T, Not extends boolean = false> {
 		}, options)
 	}
 
-	get not() {
+	get not(): this {
 		this.isNot = !this.isNot
 
 		return this

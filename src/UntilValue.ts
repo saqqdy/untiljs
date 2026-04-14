@@ -54,7 +54,7 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 				sourceReady = false,
 				targetReady = false
 
-			const checkAndResolve = () => {
+			const checkAndResolve = (): void => {
 				if (sourceReady && targetReady) {
 					const matches = deep ? deepEqual(sourceValue, targetValue, deep) : Object.is(sourceValue, targetValue)
 
@@ -108,19 +108,19 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 		return Promise.race(promises) as Not extends true ? Promise<T> : Promise<P>
 	}
 
-	toBeTruthy(options?: UntilToMatchOptions) {
+	toBeTruthy(options?: UntilToMatchOptions): Not extends true ? Promise<T & Falsy> : Promise<Exclude<T, Falsy>> {
 		return super.toMatch(v => Boolean(v), options) as Not extends true
 			? Promise<T & Falsy>
 			: Promise<Exclude<T, Falsy>>
 	}
 
-	toBeNull(options?: UntilToMatchOptions) {
+	toBeNull(options?: UntilToMatchOptions): Not extends true ? Promise<Exclude<T, null>> : Promise<null> {
 		return this.toBe(null as T, options) as Not extends true
 			? Promise<Exclude<T, null>>
 			: Promise<null>
 	}
 
-	toBeUndefined(options?: UntilToMatchOptions) {
+	toBeUndefined(options?: UntilToMatchOptions): Not extends true ? Promise<Exclude<T, undefined>> : Promise<undefined> {
 		return this.toBe(undefined as T, options) as Not extends true
 			? Promise<Exclude<T, undefined>>
 			: Promise<undefined>

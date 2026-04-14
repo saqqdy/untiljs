@@ -47,7 +47,7 @@ export const alias = {
 	untiljs: resolve(__dirname, '..'),
 }
 
-export const reporter = (_opt: any, outputOptions: any, info: any) =>
+export const reporter = (_opt: any, outputOptions: any, info: any): string =>
 	`${chalk.cyan(
 		chalk.bold(
 			outputOptions.file ? `${outputOptions.file.split('src/').pop()}` : info.fileName || '',

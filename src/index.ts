@@ -5,7 +5,7 @@ import { toValue } from './utils'
 
 function util<T extends unknown[]>(r: WatchSource<T>): UntilArray<T>
 function util<T, Not extends boolean = false>(r: WatchSource<T>, isNot?: Not): UntilValue<T>
-function util<T, Not extends boolean = false>(r: WatchSource<T>, isNot?: Not) {
+function util<T, Not extends boolean = false>(r: WatchSource<T>, isNot?: Not): UntilValue<T> {
 	const value = toValue(r)
 
 	if (Array.isArray(value)) return new UntilArray(r as WatchSource<T & unknown[]>, isNot)

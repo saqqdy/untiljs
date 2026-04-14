@@ -237,7 +237,7 @@ export function watchSource<T>(
 			intervalId: ReturnType<typeof setInterval> | null = null,
 			isStopped = false
 
-		const checkValue = () => {
+		const checkValue = (): void => {
 			if (isStopped) return
 
 			try {
@@ -275,7 +275,7 @@ export function watchSource<T>(
 
 		// Poll for changes
 		if (typeof requestAnimationFrame !== 'undefined') {
-			const checkInRAF = () => {
+			const checkInRAF = (): void => {
 				if (isStopped) return
 				checkValue()
 				requestAnimationFrame(checkInRAF)
@@ -283,7 +283,7 @@ export function watchSource<T>(
 
 			requestAnimationFrame(checkInRAF)
 		} else if (typeof setImmediate !== 'undefined') {
-			const checkInImmediate = () => {
+			const checkInImmediate = (): void => {
 				if (isStopped) return
 				checkValue()
 				setImmediate(checkInImmediate)
@@ -291,7 +291,7 @@ export function watchSource<T>(
 
 			setImmediate(checkInImmediate)
 		} else if (typeof process !== 'undefined' && typeof process.nextTick === 'function') {
-			const checkInNextTick = () => {
+			const checkInNextTick = (): void => {
 				if (isStopped) return
 				checkValue()
 				process.nextTick(checkInNextTick)
@@ -318,7 +318,7 @@ export function watchSource<T>(
 			intervalId: ReturnType<typeof setInterval> | null = null,
 			isStopped = false
 
-		const checkValue = () => {
+		const checkValue = (): void => {
 			if (isStopped) return
 
 			try {
@@ -356,7 +356,7 @@ export function watchSource<T>(
 
 		// Poll for changes
 		if (typeof requestAnimationFrame !== 'undefined') {
-			const checkInRAF = () => {
+			const checkInRAF = (): void => {
 				if (isStopped) return
 				checkValue()
 				requestAnimationFrame(checkInRAF)
@@ -364,7 +364,7 @@ export function watchSource<T>(
 
 			requestAnimationFrame(checkInRAF)
 		} else if (typeof setImmediate !== 'undefined') {
-			const checkInImmediate = () => {
+			const checkInImmediate = (): void => {
 				if (isStopped) return
 				checkValue()
 				setImmediate(checkInImmediate)
@@ -372,7 +372,7 @@ export function watchSource<T>(
 
 			setImmediate(checkInImmediate)
 		} else if (typeof process !== 'undefined' && typeof process.nextTick === 'function') {
-			const checkInNextTick = () => {
+			const checkInNextTick = (): void => {
 				if (isStopped) return
 				checkValue()
 				process.nextTick(checkInNextTick)

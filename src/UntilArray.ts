@@ -28,7 +28,7 @@ export class UntilArray<T extends unknown[], Not extends boolean = false> extend
 		super(r, isNot as Not)
 	}
 
-	toContains(value: MaybeRefOrGetter<ElementOf<T>>, options?: UntilToMatchOptions) {
+	toContains(value: MaybeRefOrGetter<ElementOf<T>>, options?: UntilToMatchOptions): Not extends true ? Promise<Exclude<T, T>> : Promise<T> {
 		return super.toMatch(v => {
 			const array = Array.from(v as unknown[])
 			const targetValue = getValue(value)
