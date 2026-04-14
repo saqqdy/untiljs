@@ -5,10 +5,8 @@
 Promise-based one-time watch for changes - **Framework Agnostic**
 
 [![NPM version][npm-image]][npm-url]
-[![Codacy Badge][codacy-image]][codacy-url]
 [![tree shaking][tree-shaking-image]][tree-shaking-url]
 ![typescript][typescript-url]
-[![Test coverage][codecov-image]][codecov-url]
 [![npm download][download-image]][download-url]
 [![gzip][gzip-image]][gzip-url]
 [![License][license-image]][license-url]
@@ -663,13 +661,9 @@ Please open an issue [here](https://github.com/saqqdy/untiljs/issues).
 
 [npm-image]: https://img.shields.io/npm/v/untiljs.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/untiljs
-[codacy-image]: https://app.codacy.com/project/badge/Grade/f70d4880e4ad4f40aa970eb9ee9d0696
-[codacy-url]: https://www.codacy.com/gh/saqqdy/untiljs/dashboard?utm_source=github.com&utm_medium=referral&utm_content=saqqdy/untiljs&utm_campaign=Badge_Grade
 [tree-shaking-image]: https://badgen.net/bundlephobia/tree-shaking/untiljs
 [tree-shaking-url]: https://bundlephobia.com/package/untiljs
 [typescript-url]: https://badgen.net/badge/icon/typescript?icon=typescript&label
-[codecov-image]: https://img.shields.io/codecov/c/github/saqqdy/untiljs.svg?style=flat-square
-[codecov-url]: https://codecov.io/github/saqqdy/untiljs?branch=master
 [download-image]: https://img.shields.io/npm/dm/untiljs.svg?style=flat-square
 [download-url]: https://npmjs.org/package/untiljs
 [gzip-image]: http://img.badgesize.io/https://unpkg.com/untiljs/dist/index.min.js?compression=gzip&label=gzip%20size:%20JS
