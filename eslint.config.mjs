@@ -1,6 +1,7 @@
 import { config } from '@eslint-sets/eslint-config'
 
 export default config({
+	type: 'lib',
 	ignores: ['examples/**'],
 	markdown: false,
 	rules: {
@@ -9,6 +10,5 @@ export default config({
 	stylistic: {
 		indent: 'tab',
 	},
-	type: 'lib',
 	typescript: true,
 })

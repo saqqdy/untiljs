@@ -29,14 +29,14 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 		// Check if target is subscribable (has subscribe method)
 		const isTargetSubscribable
 			= value !== null
-			  && typeof value === 'object'
-			  && typeof (value as { subscribe?: unknown }).subscribe === 'function'
+				&& typeof value === 'object'
+				&& typeof (value as { subscribe?: unknown }).subscribe === 'function'
 
 		if (!isTargetSubscribable) {
 			// Static target value - use simple toMatch
 			const targetValue = getTargetValue()
 
-			return super.toMatch((v) => {
+			return super.toMatch(v => {
 				if (deep) {
 					return deepEqual(v, targetValue, deep)
 				}
@@ -48,7 +48,7 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 		// Dynamic target value - watch both source and target
 		let stop: (() => void) | null = null
 
-		const watcher = new Promise<T>((resolve) => {
+		const watcher = new Promise<T>(resolve => {
 			let sourceValue: T | undefined,
 				targetValue: P | undefined,
 				sourceReady = false,
@@ -56,9 +56,7 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 
 			const checkAndResolve = () => {
 				if (sourceReady && targetReady) {
-					const matches = deep
-						? deepEqual(sourceValue, targetValue, deep)
-						: Object.is(sourceValue, targetValue)
+					const matches = deep ? deepEqual(sourceValue, targetValue, deep) : Object.is(sourceValue, targetValue)
 
 					if (this.isNot !== matches) {
 						stop?.()
@@ -70,7 +68,7 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 			// Watch source
 			const stopSource = watchSource(
 				this.r,
-				(v) => {
+				v => {
 					sourceValue = v
 					sourceReady = true
 					checkAndResolve()
@@ -81,7 +79,7 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 			// Watch target
 			const stopTarget = watchSource(
 				value as WatchSource<P>,
-				(v) => {
+				v => {
 					targetValue = v
 					targetReady = true
 					checkAndResolve()
@@ -111,7 +109,7 @@ export class UntilValue<T, Not extends boolean = false> extends UntilBase<T> {
 	}
 
 	toBeTruthy(options?: UntilToMatchOptions) {
-		return super.toMatch((v) => Boolean(v), options) as Not extends true
+		return super.toMatch(v => Boolean(v), options) as Not extends true
 			? Promise<T & Falsy>
 			: Promise<Exclude<T, Falsy>>
 	}

@@ -27,10 +27,10 @@ export class UntilBase<T, Not extends boolean = false> {
 	): Not extends true ? Promise<Exclude<T, U>> : Promise<U> {
 		let stop: (() => void) | null = null
 
-		const watcher = new Promise<T>((resolve) => {
+		const watcher = new Promise<T>(resolve => {
 			stop = watchSource(
 				this.r,
-				(v) => {
+				v => {
 					const matches = condition(v)
 
 					if (matches !== this.isNot) {
@@ -80,7 +80,7 @@ export class UntilBase<T, Not extends boolean = false> {
 			previousValue: T | undefined,
 			isFirst = true
 
-		return this.toMatch((v) => {
+		return this.toMatch(v => {
 			if (isFirst) {
 				isFirst = false
 				previousValue = v
@@ -88,9 +88,7 @@ export class UntilBase<T, Not extends boolean = false> {
 				return false
 			}
 
-			const hasChanged = options?.deep
-				? !deepEqual(previousValue, v, options.deep)
-				: !Object.is(previousValue, v)
+			const hasChanged = options?.deep ? !deepEqual(previousValue, v, options.deep) : !Object.is(previousValue, v)
 
 			if (hasChanged) {
 				count += 1

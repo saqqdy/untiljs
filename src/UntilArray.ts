@@ -29,12 +29,12 @@ export class UntilArray<T extends unknown[], Not extends boolean = false> extend
 	}
 
 	toContains(value: MaybeRefOrGetter<ElementOf<T>>, options?: UntilToMatchOptions) {
-		return super.toMatch((v) => {
+		return super.toMatch(v => {
 			const array = Array.from(v as unknown[])
 			const targetValue = getValue(value)
 
 			// Use deep equality for object comparison
-			return array.some((item) => deepEqual(item, targetValue, options?.deep ?? true))
+			return array.some(item => deepEqual(item, targetValue, options?.deep ?? true))
 		}, options)
 	}
 }

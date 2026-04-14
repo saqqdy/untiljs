@@ -19,7 +19,7 @@ const workflows = execSync(`gh workflow list --all`, {
 	.toString()
 	.replace(/\n$/, '')
 	.split('\n')
-	.map((item) => item.split('\t'))
+	.map(item => item.split('\t'))
 
 for (const [name, status, id] of workflows) {
 	if (name === workflowPublishTest.name) {

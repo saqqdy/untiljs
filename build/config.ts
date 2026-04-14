@@ -10,19 +10,17 @@ const pkg = JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf-
 
 export const banner
 	= `/*!\n`
-	  + ` * ${
-	 pkg.name
-	 } v${
-	 pkg.version
-	 }\n`
-	 + ` * ${
-	 pkg.description
-	 }\n`
-	 + ` * (c) 2023-${
-	 new Date().getFullYear()
-	 } saqqdy \n`
-	 + ` * Released under the MIT License.\n`
-	 + ` */`
+		+ ` * ${
+			pkg.name
+		} v${
+			pkg.version
+		}\n`
+		+ ` * ${
+			pkg.description
+		}\n`
+		+ ` * (c) 2023-present saqqdy \n`
+		+ ` * Released under the MIT License.\n`
+		+ ` */`
 
 export const externals = {}
 

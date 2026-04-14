@@ -1,10 +1,10 @@
 import type { InternalModuleFormat, OutputOptions, Plugin, RollupOptions } from 'rollup'
-import nodeResolve from '@rollup/plugin-node-resolve'
 import babel from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
+import json from '@rollup/plugin-json'
+import nodeResolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
 import typescript from '@rollup/plugin-typescript'
-import json from '@rollup/plugin-json'
 import filesize from 'rollup-plugin-filesize'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { banner, extensions, reporter } from './config'
@@ -32,49 +32,47 @@ export interface Options extends RollupOptions {
 
 const IS_WATCH = process.env.ROLLUP_WATCH
 
-const configs: Config[] = IS_WATCH
-	? [
-		{
-			browser: true,
-			env: 'development',
-			file: 'dist/index.mjs',
-			format: 'es',
-			input: 'src/index.ts',
-		},
-		{
-			env: 'development',
-			file: 'dist/index.cjs',
-			format: 'cjs',
-			input: 'src/index.ts',
-		},
-	]
-	: [
-		{
-			env: 'development',
-			file: 'dist/index.mjs',
-			format: 'es',
-			input: 'src/index.ts',
-		},
-		{
-			env: 'development',
-			file: 'dist/index.iife.js',
-			format: 'iife',
-			input: 'src/index.ts',
-		},
-		{
-			env: 'production',
-			file: 'dist/index.iife.min.js',
-			format: 'iife',
-			input: 'src/index.ts',
-			minify: true,
-		},
-		{
-			env: 'development',
-			file: 'dist/index.cjs',
-			format: 'cjs',
-			input: 'src/index.ts',
-		},
-	]
+const configs: Config[] = IS_WATCH ? [
+	{
+		browser: true,
+		env: 'development',
+		file: 'dist/index.mjs',
+		format: 'es',
+		input: 'src/index.ts',
+	},
+	{
+		env: 'development',
+		file: 'dist/index.cjs',
+		format: 'cjs',
+		input: 'src/index.ts',
+	},
+] : [
+	{
+		env: 'development',
+		file: 'dist/index.mjs',
+		format: 'es',
+		input: 'src/index.ts',
+	},
+	{
+		env: 'development',
+		file: 'dist/index.iife.js',
+		format: 'iife',
+		input: 'src/index.ts',
+	},
+	{
+		env: 'production',
+		file: 'dist/index.iife.min.js',
+		format: 'iife',
+		input: 'src/index.ts',
+		minify: true,
+	},
+	{
+		env: 'development',
+		file: 'dist/index.cjs',
+		format: 'cjs',
+		input: 'src/index.ts',
+	},
+]
 
 function createEntries() {
 	return configs.map(createEntry)
@@ -85,8 +83,8 @@ function createEntry(config: Config) {
 	const isTypeScript = config.input.endsWith('.ts')
 	const isTranspiled
 		= config.input.endsWith('bundler.js')
-		  || config.input.endsWith('browser.js')
-		  || config.input.endsWith('prod.js')
+			|| config.input.endsWith('browser.js')
+			|| config.input.endsWith('prod.js')
 
 	const _config: Options = {
 		external: [],

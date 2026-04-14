@@ -16,8 +16,8 @@ import {
 describe('isSubscribable', () => {
 	it('should return true for valid Subscribable objects', () => {
 		const subscribable: Subscribable<number> = {
-			subscribe: () => () => {},
 			value: 1,
+			subscribe: () => () => {},
 		}
 
 		expect(isSubscribable(subscribable)).toBeTruthy()
@@ -26,10 +26,10 @@ describe('isSubscribable', () => {
 	it('should return true for Subscribable with getter value', () => {
 		const internalValue = 1
 		const subscribable: Subscribable<number> = {
-			subscribe: () => () => {},
 			get value() {
 				return internalValue
 			},
+			subscribe: () => () => {},
 		}
 
 		expect(isSubscribable(subscribable)).toBeTruthy()
@@ -48,9 +48,9 @@ describe('isSubscribable', () => {
 	})
 
 	it('should return false for objects with subscribe that is not a function', () => {
-		expect(isSubscribable({ subscribe: 'not a function', value: 1 })).toBeFalsy()
-		expect(isSubscribable({ subscribe: null, value: 1 })).toBeFalsy()
-		expect(isSubscribable({ subscribe: 123, value: 1 })).toBeFalsy()
+		expect(isSubscribable({ value: 1, subscribe: 'not a function' })).toBeFalsy()
+		expect(isSubscribable({ value: 1, subscribe: null })).toBeFalsy()
+		expect(isSubscribable({ value: 1, subscribe: 123 })).toBeFalsy()
 	})
 
 	it('should return false for functions', () => {
@@ -69,10 +69,10 @@ describe('isSubscribable', () => {
 	})
 
 	it('should return true for Subscribable with various value types', () => {
-		expect(isSubscribable({ subscribe: () => () => {}, value: null })).toBeTruthy()
-		expect(isSubscribable({ subscribe: () => () => {}, value: undefined })).toBeTruthy()
-		expect(isSubscribable({ subscribe: () => () => {}, value: { nested: true } })).toBeTruthy()
-		expect(isSubscribable({ subscribe: () => () => {}, value: [1, 2, 3] })).toBeTruthy()
+		expect(isSubscribable({ value: null, subscribe: () => () => {} })).toBeTruthy()
+		expect(isSubscribable({ value: undefined, subscribe: () => () => {} })).toBeTruthy()
+		expect(isSubscribable({ value: { nested: true }, subscribe: () => () => {} })).toBeTruthy()
+		expect(isSubscribable({ value: [1, 2, 3], subscribe: () => () => {} })).toBeTruthy()
 	})
 })
 
@@ -90,14 +90,14 @@ describe('isRefLike', () => {
 	})
 
 	it('should return true for objects with extra properties', () => {
-		expect(isRefLike({ foo: 'bar', value: 1 })).toBeTruthy()
-		expect(isRefLike({ __v_isRef: true, value: 1 })).toBeTruthy()
+		expect(isRefLike({ value: 1, foo: 'bar' })).toBeTruthy()
+		expect(isRefLike({ value: 1, __v_isRef: true })).toBeTruthy()
 	})
 
 	it('should return false for Subscribable objects', () => {
 		const subscribable: Subscribable<number> = {
-			subscribe: () => () => {},
 			value: 1,
+			subscribe: () => () => {},
 		}
 
 		expect(isRefLike(subscribable)).toBeFalsy()
@@ -182,8 +182,8 @@ describe('toValue', () => {
 	describe('Subscribable', () => {
 		it('should extract value from Subscribable', () => {
 			const subscribable: Subscribable<number> = {
-				subscribe: () => () => {},
 				value: 42,
+				subscribe: () => () => {},
 			}
 
 			expect(toValue(subscribable)).toBe(42)
@@ -192,10 +192,10 @@ describe('toValue', () => {
 		it('should extract value from Subscribable with getter', () => {
 			const internalValue = 'test'
 			const subscribable: Subscribable<string> = {
-				subscribe: () => () => {},
 				get value() {
 					return internalValue
 				},
+				subscribe: () => () => {},
 			}
 
 			expect(toValue(subscribable)).toBe('test')
@@ -219,7 +219,7 @@ describe('toValue', () => {
 		})
 
 		it('should extract value from RefLike with extra properties', () => {
-			expect(toValue({ __v_isRef: true, foo: 'bar', value: 1 })).toBe(1)
+			expect(toValue({ value: 1, __v_isRef: true, foo: 'bar' })).toBe(1)
 		})
 
 		it('should extract value from RefLike with getter', () => {
@@ -309,8 +309,8 @@ describe('toValue', () => {
 		it('should prioritize Subscribable over RefLike', () => {
 			// Object with both value and subscribe should be treated as Subscribable
 			const subscribable = {
-				subscribe: () => () => {},
 				value: 42,
+				subscribe: () => () => {},
 			}
 
 			expect(toValue(subscribable)).toBe(42)
@@ -416,10 +416,10 @@ describe('toValue', () => {
 
 		it('should handle function with this context', () => {
 			const obj = {
+				value: 10,
 				getValue() {
 					return this.value
 				},
-				value: 10,
 			}
 
 			expect(toValue(obj.getValue.bind(obj))).toBe(10)
@@ -663,19 +663,19 @@ describe('watchSource', () => {
 			let receivedValue: number | undefined
 
 			const subscribable: Subscribable<number> = {
-				subscribe: (callback) => {
+				get value() {
+					return currentValue
+				},
+				subscribe: callback => {
 					callback(currentValue)
 
 					return () => {}
-				},
-				get value() {
-					return currentValue
 				},
 			}
 
 			const stop = watchSource(
 				subscribable,
-				(value) => {
+				value => {
 					receivedValue = value
 				},
 				{ immediate: true },
@@ -690,10 +690,10 @@ describe('watchSource', () => {
 			let callCount = 0
 
 			const subscribable: Subscribable<number> = {
-				subscribe: () => () => {},
 				get value() {
 					return currentValue
 				},
+				subscribe: () => () => {},
 			}
 
 			const stop = watchSource(
@@ -713,26 +713,26 @@ describe('watchSource', () => {
 			const callbacks: ((value: number) => void)[] = []
 
 			const subscribable: Subscribable<number> = {
-				subscribe: (callback) => {
+				get value() {
+					return currentValue
+				},
+				subscribe: callback => {
 					callbacks.push(callback)
 					callback(currentValue)
 
 					return () => {}
 				},
-				get value() {
-					return currentValue
-				},
 			}
 
 			const receivedValues: number[] = []
-			const stop = watchSource(subscribable, (value) => {
+			const stop = watchSource(subscribable, value => {
 				receivedValues.push(value)
 			})
 
 			expect(receivedValues).toEqual([1])
 
 			currentValue = 2
-			callbacks.forEach((cb) => cb(2))
+			callbacks.forEach(cb => cb(2))
 
 			expect(receivedValues).toEqual([1, 2])
 			stop()
@@ -743,31 +743,31 @@ describe('watchSource', () => {
 			const callbacks: ((value: number) => void)[] = []
 
 			const subscribable: Subscribable<number> = {
-				subscribe: (callback) => {
+				get value() {
+					return currentValue
+				},
+				subscribe: callback => {
 					callbacks.push(callback)
 					callback(currentValue)
 
 					return () => {}
 				},
-				get value() {
-					return currentValue
-				},
 			}
 
 			const receivedValues: number[] = []
-			const stop = watchSource(subscribable, (value) => {
+			const stop = watchSource(subscribable, value => {
 				receivedValues.push(value)
 			})
 
 			expect(receivedValues).toEqual([1])
 
 			// Same value - should not trigger
-			callbacks.forEach((cb) => cb(1))
+			callbacks.forEach(cb => cb(1))
 			expect(receivedValues).toEqual([1])
 
 			// Different value - should trigger
 			currentValue = 2
-			callbacks.forEach((cb) => cb(2))
+			callbacks.forEach(cb => cb(2))
 			expect(receivedValues).toEqual([1, 2])
 
 			stop()
@@ -778,21 +778,21 @@ describe('watchSource', () => {
 			const callbacks: ((value: typeof currentValue) => void)[] = []
 
 			const subscribable: Subscribable<typeof currentValue> = {
-				subscribe: (callback) => {
+				get value() {
+					return currentValue
+				},
+				subscribe: callback => {
 					callbacks.push(callback)
 					callback(currentValue)
 
 					return () => {}
-				},
-				get value() {
-					return currentValue
 				},
 			}
 
 			const receivedValues: object[] = []
 			const stop = watchSource(
 				subscribable,
-				(value) => {
+				value => {
 					receivedValues.push(value)
 				},
 				{ deep: true },
@@ -802,12 +802,12 @@ describe('watchSource', () => {
 
 			// Different reference, same content - should not trigger with deep
 			currentValue = { a: { b: 1 } }
-			callbacks.forEach((cb) => cb(currentValue))
+			callbacks.forEach(cb => cb(currentValue))
 			expect(receivedValues).toHaveLength(1) // Same content, no trigger
 
 			// Different content
 			currentValue = { a: { b: 2 } }
-			callbacks.forEach((cb) => cb(currentValue))
+			callbacks.forEach(cb => cb(currentValue))
 			expect(receivedValues).toHaveLength(2)
 
 			stop()
@@ -815,8 +815,8 @@ describe('watchSource', () => {
 
 		it('should return unsubscribe function', async () => {
 			const subscribable: Subscribable<number> = {
-				subscribe: () => () => {},
 				value: 1,
+				subscribe: () => () => {},
 			}
 
 			const stop = watchSource(subscribable, () => {})
@@ -833,7 +833,7 @@ describe('watchSource', () => {
 
 			const stop = watchSource(
 				refLike,
-				(v) => {
+				v => {
 					receivedValue = v
 				},
 				{ immediate: true },
@@ -863,15 +863,15 @@ describe('watchSource', () => {
 			const refLike = { value: 1 }
 			const receivedValues: number[] = []
 
-			const stop = watchSource(refLike, (v) => {
+			const stop = watchSource(refLike, v => {
 				receivedValues.push(v)
 			})
 
-			await new Promise((resolve) => setTimeout(resolve, 50))
+			await new Promise(resolve => setTimeout(resolve, 50))
 			expect(receivedValues).toEqual([1])
 
 			refLike.value = 2
-			await new Promise((resolve) => setTimeout(resolve, 100))
+			await new Promise(resolve => setTimeout(resolve, 100))
 			expect(receivedValues).toContain(2)
 
 			stop()
@@ -883,16 +883,16 @@ describe('watchSource', () => {
 
 			const stop = watchSource(
 				refLike,
-				(v) => {
+				v => {
 					receivedValues.push(v)
 				},
 				{ deep: true, immediate: true },
 			)
 
-			await new Promise((resolve) => setTimeout(resolve, 50))
+			await new Promise(resolve => setTimeout(resolve, 50))
 
 			refLike.value = { a: { b: 2 } }
-			await new Promise((resolve) => setTimeout(resolve, 100))
+			await new Promise(resolve => setTimeout(resolve, 100))
 
 			expect(receivedValues.length).toBeGreaterThan(1)
 			stop()
@@ -902,17 +902,17 @@ describe('watchSource', () => {
 			const refLike = { value: null as any }
 			const receivedValues: any[] = []
 
-			const stop = watchSource(refLike, (v) => {
+			const stop = watchSource(refLike, v => {
 				receivedValues.push(v)
 			})
 
-			await new Promise((resolve) => setTimeout(resolve, 50))
+			await new Promise(resolve => setTimeout(resolve, 50))
 
 			refLike.value = undefined
-			await new Promise((resolve) => setTimeout(resolve, 100))
+			await new Promise(resolve => setTimeout(resolve, 100))
 
 			refLike.value = 'test'
-			await new Promise((resolve) => setTimeout(resolve, 100))
+			await new Promise(resolve => setTimeout(resolve, 100))
 
 			expect(receivedValues).toContain(null)
 			expect(receivedValues).toContain(undefined)
@@ -925,17 +925,17 @@ describe('watchSource', () => {
 			const refLike = { value: 1 }
 			const receivedValues: number[] = []
 
-			const stop = watchSource(refLike, (v) => {
+			const stop = watchSource(refLike, v => {
 				receivedValues.push(v)
 			})
 
-			await new Promise((resolve) => setTimeout(resolve, 50))
+			await new Promise(resolve => setTimeout(resolve, 50))
 			expect(receivedValues).toEqual([1])
 
 			stop()
 
 			refLike.value = 2
-			await new Promise((resolve) => setTimeout(resolve, 100))
+			await new Promise(resolve => setTimeout(resolve, 100))
 
 			// Should not have received the change after stop
 			expect(receivedValues).toEqual([1])
@@ -949,7 +949,7 @@ describe('watchSource', () => {
 
 			const stop = watchSource(
 				() => value,
-				(v) => {
+				v => {
 					receivedValue = v
 				},
 				{ immediate: true },
@@ -981,16 +981,16 @@ describe('watchSource', () => {
 
 			const stop = watchSource(
 				() => value,
-				(v) => {
+				v => {
 					receivedValues.push(v)
 				},
 			)
 
-			await new Promise((resolve) => setTimeout(resolve, 50))
+			await new Promise(resolve => setTimeout(resolve, 50))
 			expect(receivedValues).toEqual([1])
 
 			value = 2
-			await new Promise((resolve) => setTimeout(resolve, 100))
+			await new Promise(resolve => setTimeout(resolve, 100))
 			expect(receivedValues).toContain(2)
 
 			stop()
@@ -1006,16 +1006,16 @@ describe('watchSource', () => {
 
 					return 'ready'
 				},
-				(v) => {
+				v => {
 					receivedValues.push(v)
 				},
 			)
 
-			await new Promise((resolve) => setTimeout(resolve, 50))
+			await new Promise(resolve => setTimeout(resolve, 50))
 			expect(receivedValues).toEqual([]) // No calls due to errors
 
 			shouldThrow = false
-			await new Promise((resolve) => setTimeout(resolve, 100))
+			await new Promise(resolve => setTimeout(resolve, 100))
 			expect(receivedValues).toContain('ready')
 
 			stop()
@@ -1027,16 +1027,16 @@ describe('watchSource', () => {
 
 			const stop = watchSource(
 				() => value,
-				(v) => {
+				v => {
 					receivedValues.push(v)
 				},
 				{ deep: true, immediate: true },
 			)
 
-			await new Promise((resolve) => setTimeout(resolve, 50))
+			await new Promise(resolve => setTimeout(resolve, 50))
 
 			value = { a: { b: 2 } }
-			await new Promise((resolve) => setTimeout(resolve, 100))
+			await new Promise(resolve => setTimeout(resolve, 100))
 
 			expect(receivedValues.length).toBeGreaterThan(1)
 			stop()
@@ -1048,7 +1048,7 @@ describe('watchSource', () => {
 			let receivedValue: number | undefined
 			const stop = watchSource(
 				42,
-				(v) => {
+				v => {
 					receivedValue = v
 				},
 				{ immediate: true },
@@ -1085,18 +1085,18 @@ describe('watchSource', () => {
 			const refLike = { value: 0 }
 			const receivedValues: number[] = []
 
-			const stop = watchSource(refLike, (v) => {
+			const stop = watchSource(refLike, v => {
 				receivedValues.push(v)
 			})
 
-			await new Promise((resolve) => setTimeout(resolve, 30))
+			await new Promise(resolve => setTimeout(resolve, 30))
 
 			// Rapid changes
 			for (let i = 1; i <= 5; i++) {
 				refLike.value = i
 			}
 
-			await new Promise((resolve) => setTimeout(resolve, 150))
+			await new Promise(resolve => setTimeout(resolve, 150))
 
 			// Should have received at least some of the changes
 			expect(receivedValues.length).toBeGreaterThan(0)
@@ -1170,7 +1170,7 @@ describe('createStore', () => {
 			const store = createStore(10)
 			let receivedValue: number | undefined
 
-			const unsubscribe = store.subscribe((value) => {
+			const unsubscribe = store.subscribe(value => {
 				receivedValue = value
 			})
 
@@ -1182,7 +1182,7 @@ describe('createStore', () => {
 			const store = createStore(0)
 			const receivedValues: number[] = []
 
-			const unsubscribe = store.subscribe((value) => {
+			const unsubscribe = store.subscribe(value => {
 				receivedValues.push(value)
 			})
 
@@ -1201,7 +1201,7 @@ describe('createStore', () => {
 			const store = createStore(5)
 			const receivedValues: number[] = []
 
-			const unsubscribe = store.subscribe((value) => {
+			const unsubscribe = store.subscribe(value => {
 				receivedValues.push(value)
 			})
 
@@ -1221,8 +1221,8 @@ describe('createStore', () => {
 			const values1: number[] = []
 			const values2: number[] = []
 
-			const unsub1 = store.subscribe((v) => values1.push(v))
-			const unsub2 = store.subscribe((v) => values2.push(v))
+			const unsub1 = store.subscribe(v => values1.push(v))
+			const unsub2 = store.subscribe(v => values2.push(v))
 
 			expect(values1).toEqual([0])
 			expect(values2).toEqual([0])
@@ -1243,7 +1243,7 @@ describe('createStore', () => {
 			const store = createStore(0)
 			const receivedValues: number[] = []
 
-			const unsubscribe = store.subscribe((value) => {
+			const unsubscribe = store.subscribe(value => {
 				receivedValues.push(value)
 			})
 
@@ -1261,7 +1261,7 @@ describe('createStore', () => {
 			const store = createStore(0)
 			const receivedValues: number[] = []
 
-			const unsubscribe = store.subscribe((value) => {
+			const unsubscribe = store.subscribe(value => {
 				receivedValues.push(value)
 				if (value === 1) {
 					unsubscribe()
@@ -1295,15 +1295,15 @@ describe('createStore', () => {
 			const store = createStore(0)
 			const receivedValues: number[] = []
 
-			const stop = watchSource(store, (value) => {
+			const stop = watchSource(store, value => {
 				receivedValues.push(value)
 			})
 
-			await new Promise((resolve) => setTimeout(resolve, 50))
+			await new Promise(resolve => setTimeout(resolve, 50))
 			expect(receivedValues).toEqual([0])
 
 			store.value = 5
-			await new Promise((resolve) => setTimeout(resolve, 50))
+			await new Promise(resolve => setTimeout(resolve, 50))
 			expect(receivedValues).toContain(5)
 
 			stop()
@@ -1317,7 +1317,7 @@ describe('createStore', () => {
 			expect(Number.isNaN(store.value)).toBeTruthy()
 
 			const receivedValues: number[] = []
-			const unsubscribe = store.subscribe((v) => {
+			const unsubscribe = store.subscribe(v => {
 				receivedValues.push(v)
 			})
 
@@ -1339,7 +1339,7 @@ describe('createStore', () => {
 			const store = createStore(0)
 			const receivedValues: number[] = []
 
-			const unsubscribe = store.subscribe((v) => receivedValues.push(v))
+			const unsubscribe = store.subscribe(v => receivedValues.push(v))
 
 			store.value = -0 // Object.is(0, -0) is false
 			expect(receivedValues).toHaveLength(2) // Should notify
@@ -1353,7 +1353,7 @@ describe('createStore', () => {
 			const store = createStore(obj1)
 			const receivedValues: object[] = []
 
-			const unsubscribe = store.subscribe((v) => receivedValues.push(v))
+			const unsubscribe = store.subscribe(v => receivedValues.push(v))
 
 			store.value = obj2 // Different reference, same content
 			expect(receivedValues).toHaveLength(2) // Should notify (reference changed)
@@ -1365,7 +1365,7 @@ describe('createStore', () => {
 			const store = createStore([1, 2, 3])
 			const receivedValues: number[][] = []
 
-			const unsubscribe = store.subscribe((v) => receivedValues.push(v))
+			const unsubscribe = store.subscribe(v => receivedValues.push(v))
 
 			store.value = [1, 2, 3, 4]
 			expect(receivedValues).toHaveLength(2)
@@ -1380,7 +1380,7 @@ describe('createStore', () => {
 			const stateUpdates: number[] = []
 
 			// Simulate React's useEffect + useState pattern
-			const unsubscribe = store.subscribe((value) => {
+			const unsubscribe = store.subscribe(value => {
 				stateUpdates.push(value)
 			})
 

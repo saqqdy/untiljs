@@ -60,20 +60,20 @@ export function createStore<T>(initialValue: T): Store<T> {
 	const listeners = new Set<(value: T) => void>()
 
 	return {
-		subscribe(callback: (value: T) => void): () => void {
-			listeners.add(callback)
-			// Call immediately with current value
-			callback(value)
-
-			return () => listeners.delete(callback)
-		},
 		get value() {
 			return value
 		},
 		set value(newValue: T) {
 			if (Object.is(value, newValue)) return
 			value = newValue
-			listeners.forEach((listener) => listener(value))
+			listeners.forEach(listener => listener(value))
+		},
+		subscribe(callback: (value: T) => void): () => void {
+			listeners.add(callback)
+			// Call immediately with current value
+			callback(value)
+
+			return () => listeners.delete(callback)
 		},
 	}
 }
@@ -169,7 +169,7 @@ export function deepEqual(a: unknown, b: unknown, depth: boolean | number = true
 
 	if (keysA.length !== keysB.length) return false
 
-	return keysA.every((key) => {
+	return keysA.every(key => {
 		return (
 			Object.prototype.hasOwnProperty.call(b, key)
 			&& deepEqual(
@@ -192,7 +192,7 @@ export function deepEqual(a: unknown, b: unknown, depth: boolean | number = true
 export function watchSource<T>(
 	source: WatchSource<T>,
 	callback: (value: T) => void,
-	options: { immediate?: boolean; deep?: boolean | number } = {},
+	options: { immediate?: boolean, deep?: boolean | number } = {},
 ): () => void {
 	const { deep = false, immediate = true } = options
 
@@ -201,7 +201,7 @@ export function watchSource<T>(
 		let previousValue: T | undefined,
 			isFirstCall = true
 
-		const unsubscribe = source.subscribe((value) => {
+		const unsubscribe = source.subscribe(value => {
 			if (isFirstCall) {
 				isFirstCall = false
 				if (immediate) {
