@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.3] - 2026-04-14
+
+### Added
+
+- **VitePress Documentation**: Added VitePress-based documentation site with build scripts (`build:docs`, `dev:docs`, `preview:docs`)
+- **GitHub Pages Deployment**: New `docs.yml` workflow for automatic documentation deployment to GitHub Pages
+- **Engine Requirement**: Added `engines` field specifying Node.js >= 18 requirement
+
+### Changed
+
+- **Upgraded pnpm**: Updated from v8.15.9 to v9.15.9
+- **Upgraded js-cool**: Updated from v5.x to v6.0.0
+- **Upgraded GitHub Actions**: All workflows updated to latest versions
+  - `actions/checkout@v4`
+  - `actions/setup-node@v4`
+  - `pnpm/action-setup@v4`
+  - `github/codeql-action@v3`
+  - `SonarSource/sonarcloud-github-action@v4.0.0`
+- **Improved package.json**: Better description and optimized keywords for npm discoverability
+- **Synchronized README**: Chinese and English README files now fully synchronized
+
+### Removed
+
+- **Removed TypeDoc**: Replaced with VitePress for documentation (`typedoc`, `typedoc-plugin-markdown`)
+- **Removed unused dependencies**: `cross-env`, `reinstaller`
+- **Removed Codacy**: Consolidated security scanning to CodeQL only
+- **Removed obsolete fields**: `directories` field from package.json
+
+---
+
 ## [2.1.2] - 2025-03-15
 
 ### Added

@@ -2,7 +2,7 @@
 
 # untiljs
 
-基于 Promise 的一次性变化监听 - **框架无关**
+基于 Promise 的一次性变化监听 - 框架无关的异步条件工具
 
 [![NPM version][npm-image]][npm-url]
 [![tree shaking][tree-shaking-image]][tree-shaking-url]

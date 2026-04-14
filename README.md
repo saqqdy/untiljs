@@ -2,7 +2,7 @@
 
 # untiljs
 
-Promise-based one-time watch for changes - **Framework Agnostic**
+Promise-based one-time watch for changes - Framework agnostic async condition utility
 
 [![NPM version][npm-image]][npm-url]
 [![tree shaking][tree-shaking-image]][tree-shaking-url]

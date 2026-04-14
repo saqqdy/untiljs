@@ -1,8 +1,8 @@
 {
 	"name": "untiljs",
-	"description": "Promised one-time watch for changes",
+	"description": "Promise-based one-time watch for changes - Framework agnostic async condition utility",
 	"type": "module",
-	"version": "2.1.2",
+	"version": "2.1.3",
 	"packageManager": "pnpm@9.15.9",
 	"main": "dist/index.cjs",
 	"module": "dist/index.mjs",
@@ -14,16 +14,10 @@
 			"types": "./dist/index.d.ts",
 			"require": "./dist/index.cjs",
 			"import": "./dist/index.mjs"
-		},
-		"./*": "./*"
-	},
-	"directories": {
-		"dist": "dist",
-		"src": "src"
+		}
 	},
 	"files": [
-		"dist",
-		"typings"
+		"dist"
 	],
 	"scripts": {
 		"build": "run-s clean build:{bundle,types}",
@@ -32,20 +26,20 @@
 		"build:docs": "vitepress build docs",
 		"dev:docs": "vitepress dev docs",
 		"preview:docs": "vitepress preview docs",
-		"deploy": "sh scripts/deploy.sh",
-		"roll-types": "api-extractor run && rm-all temp",
-		"watch": "pnpm build:bundle -w",
-		"pub": "tsx scripts/publish",
-		"unpub": "tsx scripts/unpublish",
-		"sync": "tsx scripts/sync",
-		"workflow:publish-test": "zx scripts/workflow.mjs",
 		"clean": "rm-all dist es lib",
-		"dist": "run-s lint:fix build",
+		"watch": "pnpm build:bundle -w",
+		"roll-types": "api-extractor run && rm-all temp",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:coverage": "vitest run --coverage",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"dist": "run-s lint:fix build",
+		"deploy": "sh scripts/deploy.sh",
+		"pub": "tsx scripts/publish",
+		"unpub": "tsx scripts/unpublish",
+		"sync": "tsx scripts/sync",
+		"workflow:publish-test": "zx scripts/workflow.mjs"
 	},
 	"dependencies": {
 		"js-cool": "^6.0.0",
@@ -66,13 +60,11 @@
 		"@types/node": "^22.19.17",
 		"@vitest/coverage-v8": "^4.1.4",
 		"chalk": "^5.6.2",
-		"cross-env": "^7.0.3",
 		"esbuild": "^0.28.0",
 		"eslint": "^9.39.4",
 		"fast-glob": "^3.3.3",
 		"load-yml": "^1.4.0",
 		"npm-run-all": "^4.1.5",
-		"reinstaller": "^3.0.2",
 		"rm-all": "^1.1.1",
 		"rollup": "^4.60.1",
 		"rollup-plugin-esbuild": "^6.2.1",
@@ -83,6 +75,9 @@
 		"vitepress": "^1.6.4",
 		"vitest": "^4.1.4",
 		"zx": "^8.8.5"
+	},
+	"engines": {
+		"node": ">=18"
 	},
 	"sideEffects": false,
 	"pnpm": {
@@ -97,13 +92,22 @@
 		}
 	},
 	"keywords": [
-		"use-until",
-		"until",
 		"untiljs",
-		"until-done",
+		"until",
+		"promise",
+		"async",
+		"await",
+		"watch",
+		"wait",
+		"reactive",
+		"conditions",
+		"state",
 		"ssr",
-		"useUntil",
-		"saqqdy"
+		"vue",
+		"react",
+		"angular",
+		"svelte",
+		"typescript"
 	],
 	"license": "MIT",
 	"author": "saqqdy <https://github.com/saqqdy>",
