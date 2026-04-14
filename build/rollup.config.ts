@@ -132,7 +132,10 @@ function createEntry(config: Config) {
 				typescript({
 					compilerOptions: {
 						declaration: false,
+						outDir: 'dist',
 					},
+					include: ['src/**'],
+					exclude: ['node_modules/**', 'examples/**'],
 				}),
 			)
 		}

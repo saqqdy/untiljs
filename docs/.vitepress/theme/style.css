@@ -1,0 +1,21 @@
+/* Custom styles for UntilJS docs */
+
+:root {
+	--vp-home-hero-name-color: transparent;
+	--vp-home-hero-name-background: linear-gradient(120deg, #42b883 30%, #35495e);
+	--vp-home-hero-image-background-image: linear-gradient(120deg, #42b883 50%, #35495e 50%);
+	--vp-home-hero-image-filter: blur(44px);
+}
+
+/* Vue green theme color */
+:root {
+	--vp-c-brand-1: #42b883;
+	--vp-c-brand-2: #35495e;
+	--vp-c-brand-3: #42b883;
+}
+
+.dark {
+	--vp-c-brand-1: #42b883;
+	--vp-c-brand-2: #35495e;
+	--vp-c-brand-3: #42b883;
+}

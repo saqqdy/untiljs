@@ -20,5 +20,5 @@
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true
 	},
-	"exclude": ["**/test", "temp", "*_bak"]
+	"exclude": ["**/test", "temp", "*_bak", "build", "examples/**"]
 }
