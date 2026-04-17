@@ -664,7 +664,7 @@ Please open an issue [here](https://github.com/saqqdy/untiljs/issues).
 [typescript-url]: https://badgen.net/badge/icon/typescript?icon=typescript&label
 [download-image]: https://img.shields.io/npm/dm/untiljs.svg?style=flat-square
 [download-url]: https://npmjs.org/package/untiljs
-[gzip-image]: http://img.badgesize.io/https://unpkg.com/untiljs/dist/index.min.js?compression=gzip&label=gzip%20size:%20JS
-[gzip-url]: http://img.badgesize.io/https://unpkg.com/untiljs/dist/index.min.js?compression=gzip&label=gzip%20size:%20JS
+[gzip-image]: https://img.badgesize.io/https://unpkg.com/untiljs/dist/index.iife.min.js?compression=gzip&label=gzip%20size:%20JS
+[gzip-url]: https://img.badgesize.io/https://unpkg.com/untiljs/dist/index.iife.min.js?compression=gzip&label=gzip%20size:%20JS
 [license-image]: https://img.shields.io/badge/License-MIT-blue.svg
 [license-url]: LICENSE
