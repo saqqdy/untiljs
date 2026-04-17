@@ -11,8 +11,6 @@
 [![gzip][gzip-image]][gzip-url]
 [![License][license-image]][license-url]
 
-[![Sonar][sonar-image]][sonar-url]
-
 </div>
 
 <div style="text-align: center; margin-bottom: 20px;" align="center">
@@ -668,5 +666,3 @@ await until(() => count.value).toBe(5) // getter 函数也可以
 [gzip-url]: http://img.badgesize.io/https://unpkg.com/untiljs/dist/index.min.js?compression=gzip&label=gzip%20size:%20JS
 [license-image]: https://img.shields.io/badge/License-MIT-blue.svg
 [license-url]: LICENSE
-[sonar-image]: https://sonarcloud.io/api/project_badges/quality_gate?project=saqqdy_untiljs
-[sonar-url]: https://sonarcloud.io/dashboard?id=saqqdy_untiljs
